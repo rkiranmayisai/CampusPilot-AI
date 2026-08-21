@@ -302,11 +302,12 @@
   // =========================================================================
   // 5. RESUME-BASED INTERVIEW QUESTION GENERATOR
   // =========================================================================
-  function generateResumeBasedQuestions(studentProfile) {
+  function generateResumeBasedQuestions(studentProfile = {}) {
+    const profile = studentProfile || {};
     const questions = [];
-    const skills = studentProfile.skills || [];
-    const name = studentProfile.fullName || studentProfile.name || "Candidate";
-    const role = studentProfile.targetRole || "Software Engineer";
+    const skills = profile.skills || [];
+    const name = profile.fullName || profile.name || "Candidate";
+    const role = profile.targetRole || "Software Engineer";
 
     questions.push({
       id: "res_proj_1",

@@ -1,24 +1,25 @@
 // CampusPilot AI - Intelligent Application Form Auto-Fill & Answer Generation Engine
 
-function generateApplicationForm(studentProfile, opportunity, tailoredData = {}) {
-  const edu = studentProfile.education || {};
-  const social = studentProfile.socialLinks || {};
+function generateApplicationForm(studentProfile = {}, opportunity = {}, tailoredData = {}) {
+  const profile = studentProfile || {};
+  const edu = profile.education || {};
+  const social = profile.socialLinks || {};
 
   const formFields = {
-    fullName: studentProfile.fullName || studentProfile.name || "",
-    email: studentProfile.email || "",
-    phone: studentProfile.phone || "",
-    institution: edu.institution || "National Institute of Technology",
-    degree: edu.degree || "B.Tech",
-    branch: edu.branch || "Computer Science",
-    graduationYear: edu.graduationYear || "2027",
-    gpa: edu.gpa || "8.8 / 10.0",
-    city: edu.city || "Hyderabad",
+    fullName: profile.fullName || profile.name || "",
+    email: profile.email || "",
+    phone: profile.phone || "",
+    institution: edu.institution || profile.institution || "National Institute of Technology",
+    degree: edu.degree || profile.degree || "B.Tech",
+    branch: edu.branch || profile.branch || "Computer Science",
+    graduationYear: edu.graduationYear || profile.graduationYear || "2027",
+    gpa: edu.gpa || profile.gpa || "8.8 / 10.0",
+    city: edu.city || profile.city || "Hyderabad",
     githubUrl: social.github || "",
     linkedinUrl: social.linkedin || "",
     portfolioUrl: social.portfolio || "",
-    resumeFileName: studentProfile.resumeFile || "Resume_SaiPrakash.pdf",
-    coverSummary: tailoredData.tailoredSummary || ""
+    resumeFileName: profile.resumeFile || "Resume_SaiPrakash.pdf",
+    coverSummary: (tailoredData && tailoredData.tailoredSummary) || ""
   };
 
   const questions = opportunity.applicationQuestions || [

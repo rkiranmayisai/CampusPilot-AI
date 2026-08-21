@@ -1,7 +1,8 @@
 // CampusPilot AI - Multi-Dimensional Opportunity Match Scoring Engine
 
-function calculateOpportunityMatch(student, opportunity) {
-  const studentSkillsLower = student.skills.map(s => s.trim().toLowerCase());
+function calculateOpportunityMatch(student = {}, opportunity = {}) {
+  const sSkills = (student && student.skills) ? student.skills : [];
+  const studentSkillsLower = sSkills.map(s => String(s || '').trim().toLowerCase());
   const oppSkills = opportunity.requiredSkills || [];
 
   // 1. Skills Match Score Calculation
@@ -26,11 +27,15 @@ function calculateOpportunityMatch(student, opportunity) {
     : 100;
 
   // 2. Academic & Year Eligibility Check
-  let isYearEligible = opportunity.targetYears ? opportunity.targetYears.includes(student.year) : true;
+  const studentYear = student?.year || student?.education?.currentYear || "Year 3";
+  const studentDegree = student?.degree || student?.education?.degree || "B.Tech";
+  const studentGpa = parseFloat(student?.gpa || student?.education?.gpa || "8.5");
+
+  let isYearEligible = opportunity.targetYears ? opportunity.targetYears.includes(studentYear) : true;
   let isDegreeEligible = opportunity.degreeEligible 
-    ? opportunity.degreeEligible.some(d => d.toLowerCase().includes(student.degree.toLowerCase()) || d === "All Degrees") 
+    ? opportunity.degreeEligible.some(d => (d || '').toLowerCase().includes(studentDegree.toLowerCase()) || d === "All Degrees") 
     : true;
-  let isGpaEligible = student.gpa ? student.gpa >= (opportunity.minGpa || 0) : true;
+  let isGpaEligible = studentGpa ? studentGpa >= (opportunity.minGpa || 0) : true;
 
   let eligibilityScore = 100;
   if (!isYearEligible) eligibilityScore -= 35;
@@ -39,15 +44,15 @@ function calculateOpportunityMatch(student, opportunity) {
   eligibilityScore = Math.max(0, eligibilityScore);
 
   // 3. Interest & Career Goal Match
-  const studentInterestsLower = (student.interests || []).map(i => i.toLowerCase());
-  const targetRoleLower = (student.targetRole || "").toLowerCase();
+  const studentInterestsLower = ((student && student.interests) || []).map(i => String(i || '').toLowerCase());
+  const targetRoleLower = String((student && student.targetRole) || "").toLowerCase();
 
   let interestMatchPercent = 70; // baseline
-  const titleLower = opportunity.title.toLowerCase();
-  const descLower = opportunity.description.toLowerCase();
+  const titleLower = String(opportunity.title || '').toLowerCase();
+  const descLower = String(opportunity.description || '').toLowerCase();
 
   const matchesTargetRole = targetRoleLower && (titleLower.includes(targetRoleLower) || descLower.includes(targetRoleLower));
-  const matchesInterestTag = studentInterestsLower.some(tag => titleLower.includes(tag) || descLower.includes(tag));
+  const matchesInterestTag = studentInterestsLower.some(tag => tag && (titleLower.includes(tag) || descLower.includes(tag)));
 
   if (matchesTargetRole) interestMatchPercent += 20;
   if (matchesInterestTag) interestMatchPercent += 10;
@@ -70,7 +75,7 @@ function calculateOpportunityMatch(student, opportunity) {
   }
 
   if (eligibilityScore === 100) {
-    rationaleParts.push(`Your academic profile (${student.degree}, ${student.year}) meets 100% of eligibility criteria.`);
+    rationaleParts.push(`Your academic profile (${studentDegree}, ${studentYear}) meets 100% of eligibility criteria.`);
   } else if (!isYearEligible) {
     rationaleParts.push(`Targeted primarily for ${opportunity.targetYears ? opportunity.targetYears.join(" & ") : "other years"}.`);
   }

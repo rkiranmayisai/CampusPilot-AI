@@ -80,14 +80,14 @@ CampusPilot AI brings the entire collegiate career lifecycle into one unified, l
 ### 🌐 3D Isometric Platform Architecture & Command Center
 High-depth 3D isometric overview showing floating glassmorphism dashboard cards, live ATS gauge, automated email alert dispatcher, and verified internship feeds:
 
-![CampusPilot AI 3D Isometric Showcase](./assets/screenshots/campuspilot_3d_mockup.jpg)
+![CampusPilot AI 3D Isometric Showcase](./campuspilot_3d_mockup.jpg)
 
 ---
 
 ### 🏠 1. Dashboard & Auto-Apply Center
 The central command hub displaying real-time metrics, stipend breakdowns, high-match opportunities ($\ge 80\%$), and 1-click candidate preparation controls:
 
-![CampusPilot AI Dashboard & Auto-Apply Center](./assets/screenshots/dashboard_preview.jpg)
+![CampusPilot AI Dashboard & Auto-Apply Center](./dashboard_preview.jpg)
 
 ---
 
@@ -96,12 +96,12 @@ Client-side resume optimizer featuring live ATS score auditing, keyword density 
 
 | 🏛️ ATS Classic Professional | 💻 Modern Tech / Developer |
 | :---: | :---: |
-| ![ATS Classic Template](./assets/templates/ats_preview.jpg) | ![Modern Tech Template](./assets/templates/modern_dev_preview.jpg) |
+| ![ATS Classic Template](./ats_preview.jpg) | ![Modern Tech Template](./modern_dev_preview.jpg) |
 | *Single-column ATS standard layout* | *Optimized for GitHub & software projects* |
 
 | 🔬 AI & ML Research | ⚡ Minimal Clean Executive |
 | :---: | :---: |
-| ![AI Tech Template](./assets/templates/ai_tech_preview.jpg) | ![Minimal Template](./assets/templates/minimal_preview.jpg) |
+| ![AI Tech Template](./ai_tech_preview.jpg) | ![Minimal Template](./minimal_preview.jpg) |
 | *Highlights benchmarks & model architectures* | *Clean typography with balanced whitespace* |
 
 ---
@@ -334,7 +334,7 @@ CampusPilot AI handles personal student information (resumes, GPAs, contact numb
  │   │  • Script Tag / Handler Stripping (`sanitizeText`)         │       │
  │   │  • Safe Protocol Whitelist (`https://`, `mailto:`)         │       │
  │   │  • Token Display Obfuscation (`re_1234••••••••5678`)       │       │
- │   └───────────────────────────┬────────────────────────────────┘       │
+ │   └───────────┬────────────────────────────────┘       │
  │                               │                                        │
  │                               ▼                                        │
  │   ┌────────────────────────────────────────────────────────────┐       │
@@ -377,7 +377,7 @@ To protect students from scam listings, unpaid exploitation disguised as full-ti
 ```
 
 ### Implementation Architecture:
-- **Current Implementation**: Uses a structured, curated opportunity dataset ([`mockOpportunities.js`](./js/data/mockOpportunities.js)) mapping to verified official career portals (Google, Microsoft, NVIDIA, Amazon, Hugging Face), with pre-configured eligibility criteria, questions, and stipend disclosures for demonstration.
+- **Current Implementation**: Uses a structured, curated opportunity dataset ([`mockOpportunities.js`](./mockOpportunities.js)) mapping to verified official career portals (Google, Microsoft, NVIDIA, Amazon, Hugging Face), with pre-configured eligibility criteria, questions, and stipend disclosures for demonstration.
 - **Planned Production Implementation**: An automated web crawling and ATS API ingestion engine (integrating with Workday, Greenhouse, and Lever feeds) that dynamically parses live postings, executes real-time TTL expiration checks, and applies automated fee-charging scam filters.
 
 ---
@@ -398,9 +398,9 @@ CampusPilot AI is engineered with a **zero-build, high-performance architecture*
 
 ---
 
-## 📁 Modular Engine Architecture
+## 📁 Flat Zero-Subfolder Architecture
 
-The codebase is organized into **specialized modular services** located in [`js/services/`](./js/services/):
+The codebase is organized in a **clean, flat single-level structure** for effortless GitHub upload, static hosting, and GitHub Pages deployment:
 
 ```
 CampusPilot AI/

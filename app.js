@@ -5,7 +5,61 @@
   const services = window.CampusPilotServices || {};
 
   const INITIAL_OPPORTUNITIES = data.INITIAL_OPPORTUNITIES || [];
-  const buildStudentProfile = services.buildStudentProfile || function(p) { return p; };
+  function buildStudentProfileLocal(rawProfileData = {}) {
+    const raw = rawProfileData || {};
+    const edu = raw.education || {};
+    return {
+      fullName: raw.name || raw.fullName || "Sai Prakash Neelavar",
+      name: raw.name || raw.fullName || "Sai Prakash Neelavar",
+      email: raw.email || "saiprakashneelavar@gmail.com",
+      phone: raw.phone || "+91 98765 43210",
+      degree: raw.degree || edu.degree || "B.Tech",
+      branch: raw.branch || edu.branch || "Computer Science & Engineering",
+      graduationYear: raw.graduationYear || edu.graduationYear || "2027",
+      year: raw.year || raw.currentYear || edu.currentYear || "Year 3",
+      currentYear: raw.year || raw.currentYear || edu.currentYear || "Year 3",
+      gpa: raw.gpa || edu.gpa || "8.9",
+      city: raw.city || edu.city || "Bengaluru, India",
+      education: {
+        institution: raw.institution || edu.institution || "National Institute of Technology",
+        degree: raw.degree || edu.degree || "B.Tech",
+        branch: raw.branch || edu.branch || "Computer Science & Engineering",
+        graduationYear: raw.graduationYear || edu.graduationYear || "2027",
+        currentYear: raw.year || raw.currentYear || edu.currentYear || "Year 3",
+        gpa: raw.gpa || edu.gpa || "8.9",
+        city: raw.city || edu.city || "Bengaluru, India"
+      },
+      skills: Array.isArray(raw.skills) && raw.skills.length > 0 ? raw.skills : ["Python", "PyTorch", "SQL", "C++", "CUDA", "Machine Learning", "Git", "React", "Tableau"],
+      projects: Array.isArray(raw.projects) && raw.projects.length > 0 ? raw.projects : [
+        {
+          title: "Autonomous Agent & AI Career Navigator",
+          description: "Built multimodal agentic system for matching student skills to verified internships.",
+          tech: "Python, PyTorch, React, SQL"
+        }
+      ],
+      certifications: raw.certifications || ["Google AI & Machine Learning Professional Certificate"],
+      experience: raw.experience || [],
+      socialLinks: {
+        github: raw.github || raw.socialLinks?.github || "https://github.com/saiprakashneelavar",
+        linkedin: raw.linkedin || raw.socialLinks?.linkedin || "https://linkedin.com/in/saiprakashneelavar",
+        portfolio: raw.portfolio || raw.socialLinks?.portfolio || "https://saiprakash.dev"
+      },
+      resumeFile: raw.resumeFile || "Sai_Prakash_Resume_2026.pdf",
+      resumeVerified: true,
+      targetRoles: raw.targetRoles || ["AI/ML Engineering Intern", "Software Developer Intern", "Full Stack AI Engineer"]
+    };
+  }
+
+  const buildStudentProfile = function(p) {
+    if (window.CampusPilotServices && typeof window.CampusPilotServices.buildStudentProfile === 'function') {
+      try {
+        return window.CampusPilotServices.buildStudentProfile(p);
+      } catch (err) {
+        console.warn("Fallback to local profile builder:", err);
+      }
+    }
+    return buildStudentProfileLocal(p);
+  };
   const extractSkillsFromText = services.extractSkillsFromText || function() { return []; };
   const filterOpportunities = services.filterOpportunities || function(opps) { return opps; };
   const computeFilterMetrics = services.computeFilterMetrics || function() { return {}; };
@@ -103,7 +157,10 @@
     try {
       const raw = localStorage.getItem(LOCAL_PROFILE_KEY);
       if (raw) {
-        return buildStudentProfile(JSON.parse(raw));
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          return buildStudentProfile(parsed);
+        }
       }
     } catch (e) {
       console.warn("Could not read local profile:", e);
@@ -117,6 +174,15 @@
       year: "Year 3",
       graduationYear: "2027",
       city: "Bengaluru, India",
+      education: {
+        institution: "National Institute of Technology",
+        degree: "B.Tech",
+        branch: "Computer Science & Engineering",
+        graduationYear: "2027",
+        currentYear: "Year 3",
+        gpa: "8.9",
+        city: "Bengaluru, India"
+      },
       skills: ["Python", "PyTorch", "SQL", "C++", "CUDA", "Machine Learning", "Git", "React", "Tableau"],
       projects: []
     });
@@ -132,7 +198,7 @@
 
   // Global Application State
   let studentProfile = getSavedStudentProfile();
-  let isOnboarded = Boolean(studentProfile.fullName && studentProfile.email);
+  let isOnboarded = Boolean(localStorage.getItem(LOCAL_PROFILE_KEY));
   let onboardingStep = 1;
   let resumeInputMode = "upload";
   let uploadedFileName = "";
@@ -163,24 +229,24 @@
   let isStudioQuickEditOpen = true;
 
   let studioResumeData = {
-    fullName: (studentProfile.fullName || studentProfile.name || "SAI PRAKASH NEELAVAR").replace("SAIPRAKASHNEELAVAR", "SAI PRAKASH NEELAVAR"),
-    email: studentProfile.email || "saiprakash@gmail.com",
-    phone: studentProfile.phone || "+91 98765 43210",
-    location: studentProfile.education?.city || "Hyderabad, India",
+    fullName: (studentProfile?.fullName || studentProfile?.name || "SAI PRAKASH NEELAVAR").replace("SAIPRAKASHNEELAVAR", "SAI PRAKASH NEELAVAR"),
+    email: studentProfile?.email || "saiprakash@gmail.com",
+    phone: studentProfile?.phone || "+91 98765 43210",
+    location: studentProfile?.education?.city || studentProfile?.city || "Hyderabad, India",
     socialLinks: {
-      github: studentProfile.socialLinks?.github || "github.com/saiprakash",
-      linkedin: studentProfile.socialLinks?.linkedin || "linkedin.com/in/saiprakash",
-      portfolio: studentProfile.socialLinks?.portfolio || ""
+      github: studentProfile?.socialLinks?.github || "github.com/saiprakash",
+      linkedin: studentProfile?.socialLinks?.linkedin || "linkedin.com/in/saiprakash",
+      portfolio: studentProfile?.socialLinks?.portfolio || ""
     },
     education: {
-      institution: studentProfile.education?.institution || "University Institute of Technology",
-      degree: studentProfile.education?.degree || "B.Tech",
-      branch: studentProfile.education?.branch || "Computer Science & Design (CSD)",
-      currentYear: studentProfile.education?.currentYear || "Year 3",
-      gpa: studentProfile.education?.gpa || "8.8 / 10",
+      institution: studentProfile?.education?.institution || "University Institute of Technology",
+      degree: studentProfile?.education?.degree || studentProfile?.degree || "B.Tech",
+      branch: studentProfile?.education?.branch || studentProfile?.branch || "Computer Science & Design (CSD)",
+      currentYear: studentProfile?.education?.currentYear || studentProfile?.year || "Year 3",
+      gpa: studentProfile?.education?.gpa || studentProfile?.gpa || "8.8 / 10",
       intermediate: "94%",
       tenth: "95%",
-      graduationYear: studentProfile.education?.graduationYear || "2027"
+      graduationYear: studentProfile?.education?.graduationYear || studentProfile?.graduationYear || "2027"
     },
     skills: studentProfile.skills && studentProfile.skills.length > 0 ? studentProfile.skills : [
       "Python", "C", "Java", "Machine Learning", "Data Science", "Data Visualization", "HTML", "CSS", "JavaScript", "Flask", "SQL", "SQLite", "Git", "GitHub"
@@ -1181,6 +1247,11 @@
                   ${unreadNotifCount > 0 ? `<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-[#070b12]"></span>` : ''}
                 </button>
 
+                <!-- Switch Login / Sign In Button -->
+                <button onclick="window.openLoginModal()" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/60 transition-all text-xs font-bold shadow-sm" title="Switch candidate login or update profile">
+                  <span>🔑</span> <span class="hidden sm:inline">Switch Login</span>
+                </button>
+
                 <!-- User Avatar Dropdown (Custom v) -->
                 <div onclick="window.switchTab('profile')" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all">
                   <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center text-xs font-bold text-white shadow-sm">
@@ -1516,11 +1587,25 @@
 
           ${onboardingStep === 1 ? `
             <div class="space-y-4 text-xs">
-              <div class="p-3 bg-indigo-950/40 rounded-xl border border-indigo-500/30 text-slate-300">
-                🔒 <strong>Privacy Notice:</strong> Your details are stored locally in your own browser (<code class="text-indigo-300">localStorage</code>). Sharing the website URL will <strong>never</strong> reveal your personal details to anyone else!
+              <!-- 1-Click Fast Login / Demo Account Banner -->
+              <div class="p-4 bg-gradient-to-r from-indigo-950/90 via-purple-950/80 to-slate-950 rounded-2xl border border-indigo-500/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xl shadow-indigo-950/40">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-1.5 font-extrabold text-white text-xs">
+                    <span class="text-sm">⚡</span>
+                    <span class="text-indigo-300">Quick Explorer & Recruiter Demo Login</span>
+                  </div>
+                  <p class="text-[11px] text-slate-300">Instant 1-click login with pre-loaded candidate profile (Sai Prakash - NIT 2027) to explore all features.</p>
+                </div>
+                <button type="button" onclick="window.quickDemoLogin()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-1.5 shrink-0 border border-indigo-400">
+                  <span>⚡</span> <span>1-Click Demo Login</span>
+                </button>
               </div>
 
-              <h3 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">Enter Your Personal Details & Email Address</h3>
+              <div class="p-3 bg-emerald-950/40 rounded-xl border border-emerald-500/30 text-slate-300">
+                🔒 <strong>100% Local-First Privacy:</strong> Your candidate credentials and resume are encrypted in your own browser (<code class="text-emerald-300">localStorage</code>). Sharing your GitHub link will never expose your personal data!
+              </div>
+
+              <h3 class="text-sm font-bold text-indigo-300 uppercase tracking-wider">Or Enter Your Custom Candidate Details</h3>
               
               <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -1537,7 +1622,7 @@
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Degree</label>
                   <select id="ob-degree" class="form-input bg-slate-900">
-                    <option value="B.Tech" ${studentProfile.education.degree === 'B.Tech' ? 'selected' : ''}>B.Tech</option>
+                    <option value="B.Tech" ${(studentProfile?.education?.degree || studentProfile?.degree) === 'B.Tech' ? 'selected' : ''}>B.Tech</option>
                     <option value="M.Tech">M.Tech</option>
                     <option value="BCA">BCA</option>
                     <option value="MCA">MCA</option>
@@ -1546,18 +1631,18 @@
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Branch / Specialization</label>
-                  <input type="text" id="ob-branch" value="${studentProfile.education.branch || ''}" class="form-input" placeholder="Enter your branch (e.g. Computer Science)..." />
+                  <input type="text" id="ob-branch" value="${studentProfile?.education?.branch || studentProfile?.branch || ''}" class="form-input" placeholder="Enter your branch (e.g. Computer Science)..." />
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Graduation Year</label>
-                  <input type="text" id="ob-grad" value="${studentProfile.education.graduationYear || '2027'}" class="form-input font-mono" placeholder="e.g. 2027..." />
+                  <input type="text" id="ob-grad" value="${studentProfile.education?.graduationYear || '2027'}" class="form-input font-mono" placeholder="e.g. 2027..." />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">City / Location</label>
-                  <input type="text" id="ob-city" value="${studentProfile.education.city || ''}" class="form-input" placeholder="Enter your city (e.g. Hyderabad)..." />
+                  <input type="text" id="ob-city" value="${studentProfile.education?.city || ''}" class="form-input" placeholder="Enter your city (e.g. Hyderabad)..." />
                 </div>
               </div>
 
@@ -3079,19 +3164,19 @@
               <div class="grid grid-cols-2 gap-3 text-xs">
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Full Name</label>
-                  <input type="text" id="rf-name" value="${app.formFields.fullName}" class="form-input" />
+                  <input type="text" id="rf-name" value="${app?.formFields?.fullName || studentProfile?.fullName || ''}" class="form-input" />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Email Address</label>
-                  <input type="email" id="rf-email" value="${app.formFields.email}" class="form-input font-mono" />
+                  <input type="email" id="rf-email" value="${app?.formFields?.email || studentProfile?.email || ''}" class="form-input font-mono" />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Degree & Branch</label>
-                  <input type="text" id="rf-degree" value="${app.formFields.degree} (${app.formFields.branch})" class="form-input" />
+                  <input type="text" id="rf-degree" value="${app?.formFields?.degree || studentProfile?.education?.degree || studentProfile?.degree || 'B.Tech'} (${app?.formFields?.branch || studentProfile?.education?.branch || studentProfile?.branch || 'CSE'})" class="form-input" />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Graduation Year</label>
-                  <input type="text" id="rf-grad" value="${app.formFields.graduationYear}" class="form-input" />
+                  <input type="text" id="rf-grad" value="${app?.formFields?.graduationYear || studentProfile?.education?.graduationYear || studentProfile?.graduationYear || '2027'}" class="form-input" />
                 </div>
               </div>
             </div>
@@ -8090,13 +8175,13 @@
                       <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80">
                         <span class="text-[10px] text-slate-500 uppercase font-bold block">Degree & Branch</span>
                         <span class="text-slate-200 font-bold block truncate" id="live-card-degree">
-                          ${studentProfile.education?.degree || 'B.Tech'} — ${studentProfile.education?.branch || 'CSE'}
+                          ${studentProfile?.education?.degree || studentProfile?.degree || 'B.Tech'} — ${studentProfile?.education?.branch || studentProfile?.branch || 'CSE'}
                         </span>
                       </div>
                       <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80">
                         <span class="text-[10px] text-slate-500 uppercase font-bold block">Class / Location</span>
                         <span class="text-slate-200 font-bold block truncate" id="live-card-loc">
-                          Batch of ${studentProfile.education?.graduationYear || '2027'} • ${studentProfile.education?.city || 'Bengaluru'}
+                          Batch of ${studentProfile?.education?.graduationYear || studentProfile?.graduationYear || '2027'} • ${studentProfile?.education?.city || studentProfile?.city || 'Bengaluru'}
                         </span>
                       </div>
                     </div>
@@ -8187,27 +8272,27 @@
                 <div class="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">Full Name</label>
-                    <input type="text" id="pf-name" value="${studentProfile.fullName}" oninput="window.syncLive3DCard()" class="form-input" placeholder="Full name..." />
+                    <input type="text" id="pf-name" value="${studentProfile?.fullName || studentProfile?.name || ''}" oninput="window.syncLive3DCard()" class="form-input" placeholder="Full name..." />
                   </div>
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">Email Address</label>
-                    <input type="email" id="pf-email" value="${studentProfile.email}" oninput="window.syncLive3DCard()" class="form-input font-mono" placeholder="Email..." />
+                    <input type="email" id="pf-email" value="${studentProfile?.email || ''}" oninput="window.syncLive3DCard()" class="form-input font-mono" placeholder="Email..." />
                   </div>
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">Degree</label>
-                    <input type="text" id="pf-degree" value="${studentProfile.education.degree}" oninput="window.syncLive3DCard()" class="form-input" />
+                    <input type="text" id="pf-degree" value="${studentProfile?.education?.degree || studentProfile?.degree || 'B.Tech'}" oninput="window.syncLive3DCard()" class="form-input" />
                   </div>
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">Branch</label>
-                    <input type="text" id="pf-branch" value="${studentProfile.education.branch}" oninput="window.syncLive3DCard()" class="form-input" placeholder="Branch..." />
+                    <input type="text" id="pf-branch" value="${studentProfile?.education?.branch || studentProfile?.branch || 'CSE'}" oninput="window.syncLive3DCard()" class="form-input" placeholder="Branch..." />
                   </div>
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">Graduation Year</label>
-                    <input type="text" id="pf-grad" value="${studentProfile.education.graduationYear}" oninput="window.syncLive3DCard()" class="form-input" />
+                    <input type="text" id="pf-grad" value="${studentProfile?.education?.graduationYear || studentProfile?.graduationYear || '2027'}" oninput="window.syncLive3DCard()" class="form-input" />
                   </div>
                   <div>
                     <label class="block font-bold text-slate-400 mb-1">City / Location</label>
-                    <input type="text" id="pf-city" value="${studentProfile.education.city}" oninput="window.syncLive3DCard()" class="form-input" placeholder="City..." />
+                    <input type="text" id="pf-city" value="${studentProfile?.education?.city || studentProfile?.city || 'Bengaluru'}" oninput="window.syncLive3DCard()" class="form-input" placeholder="City..." />
                   </div>
                 </div>
 
@@ -8271,16 +8356,16 @@
                       </div>
                     </div>
                     <div>
-                      <h2 class="text-2xl font-black text-white tracking-tight">${studentProfile.fullName || 'Sai Prakash Neelavar'}</h2>
-                      <p class="text-xs text-indigo-300 font-mono font-semibold">${studentProfile.email || 'saiprakash@gmail.com'}</p>
-                      <p class="text-xs text-slate-400 mt-1">${studentProfile.education?.degree} in ${studentProfile.education?.branch} • GPA ${studentProfile.education?.gpa || '8.9'}</p>
+                      <h2 class="text-2xl font-black text-white tracking-tight">${studentProfile?.fullName || studentProfile?.name || 'Sai Prakash Neelavar'}</h2>
+                      <p class="text-xs text-indigo-300 font-mono font-semibold">${studentProfile?.email || 'saiprakash@gmail.com'}</p>
+                      <p class="text-xs text-slate-400 mt-1">${studentProfile?.education?.degree || studentProfile?.degree || 'B.Tech'} in ${studentProfile?.education?.branch || studentProfile?.branch || 'CSE'} • GPA ${studentProfile?.education?.gpa || studentProfile?.gpa || '8.9'}</p>
                     </div>
                   </div>
 
                   <div class="grid grid-cols-3 gap-3 text-center depth-layer-2 font-mono text-xs">
                     <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                       <span class="text-[10px] text-slate-500 block uppercase">Graduation</span>
-                      <span class="text-white font-black">${studentProfile.education?.graduationYear || '2027'}</span>
+                      <span class="text-white font-black">${studentProfile?.education?.graduationYear || studentProfile?.graduationYear || '2027'}</span>
                     </div>
                     <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                       <span class="text-[10px] text-slate-500 block uppercase">ATS Score</span>
@@ -8288,7 +8373,7 @@
                     </div>
                     <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
                       <span class="text-[10px] text-slate-500 block uppercase">Location</span>
-                      <span class="text-cyan-300 font-black">${studentProfile.education?.city || 'Bengaluru'}</span>
+                      <span class="text-cyan-300 font-black">${studentProfile?.education?.city || studentProfile?.city || 'Bengaluru'}</span>
                     </div>
                   </div>
 
@@ -10471,7 +10556,32 @@
 
   window.skipOnboardingToDashboard = function() {
     isOnboarded = true;
-    showToast("🚀 Onboarding closed! Welcome to CampusPilot AI Dashboard!");
+    showToast("🚀 Welcome to CampusPilot AI Dashboard!");
+    renderApp();
+  };
+
+  window.quickDemoLogin = function() {
+    studentProfile = buildStudentProfile({
+      name: "Sai Prakash Neelavar",
+      fullName: "Sai Prakash Neelavar",
+      email: "saiprakashneelavar@gmail.com",
+      degree: "B.Tech",
+      branch: "Computer Science & Engineering",
+      year: "Year 3",
+      graduationYear: "2027",
+      city: "Bengaluru, India",
+      skills: ["Python", "PyTorch", "SQL", "C++", "CUDA", "Machine Learning", "Git", "React", "Tableau"],
+      projects: []
+    });
+    persistStudentProfile(studentProfile);
+    isOnboarded = true;
+    showToast("🎉 Logged in as Sai Prakash Neelavar (NIT 2027)!");
+    renderApp();
+  };
+
+  window.openLoginModal = function() {
+    isOnboarded = false;
+    onboardingStep = 1;
     renderApp();
   };
 
@@ -11221,13 +11331,19 @@
 
   window.nextOnboardingStep = function(stepNum) {
     if (stepNum === 2) {
-      studentProfile.fullName = document.getElementById('ob-name')?.value || "";
+      if (!studentProfile) studentProfile = {};
+      if (!studentProfile.education) studentProfile.education = {};
+      studentProfile.fullName = document.getElementById('ob-name')?.value || studentProfile.fullName || "";
       studentProfile.name = studentProfile.fullName;
-      studentProfile.email = document.getElementById('ob-email')?.value || "";
+      studentProfile.email = document.getElementById('ob-email')?.value || studentProfile.email || "";
       studentProfile.education.degree = document.getElementById('ob-degree')?.value || "B.Tech";
       studentProfile.education.branch = document.getElementById('ob-branch')?.value || "";
       studentProfile.education.graduationYear = document.getElementById('ob-grad')?.value || "2027";
       studentProfile.education.city = document.getElementById('ob-city')?.value || "";
+      studentProfile.degree = studentProfile.education.degree;
+      studentProfile.branch = studentProfile.education.branch;
+      studentProfile.graduationYear = studentProfile.education.graduationYear;
+      studentProfile.city = studentProfile.education.city;
       
       persistStudentProfile(studentProfile);
     }
@@ -11794,13 +11910,19 @@
   };
 
   window.saveCandidateProfile = function() {
-    studentProfile.fullName = document.getElementById('pf-name')?.value || "";
+    if (!studentProfile) studentProfile = {};
+    if (!studentProfile.education) studentProfile.education = {};
+    studentProfile.fullName = document.getElementById('pf-name')?.value || studentProfile.fullName || "";
     studentProfile.name = studentProfile.fullName;
-    studentProfile.email = document.getElementById('pf-email')?.value || "";
+    studentProfile.email = document.getElementById('pf-email')?.value || studentProfile.email || "";
     studentProfile.education.degree = document.getElementById('pf-degree')?.value || "B.Tech";
     studentProfile.education.branch = document.getElementById('pf-branch')?.value || "";
     studentProfile.education.graduationYear = document.getElementById('pf-grad')?.value || "2027";
     studentProfile.education.city = document.getElementById('pf-city')?.value || "";
+    studentProfile.degree = studentProfile.education.degree;
+    studentProfile.branch = studentProfile.education.branch;
+    studentProfile.graduationYear = studentProfile.education.graduationYear;
+    studentProfile.city = studentProfile.education.city;
 
     const skillsText = document.getElementById('pf-skills')?.value || "";
     if (skillsText) {

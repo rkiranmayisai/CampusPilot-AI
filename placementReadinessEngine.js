@@ -1,8 +1,9 @@
 // CampusPilot AI - Unified Placement Readiness Score Engine
 
-function calculatePlacementReadiness(studentProfile, resumeAnalysis, githubAnalysis, mockInterviewScore = 78) {
+function calculatePlacementReadiness(studentProfile = {}, resumeAnalysis = null, githubAnalysis = null, mockInterviewScore = 78) {
   // 1. DSA & Skills Score (out of 100)
-  const skillCount = studentProfile.skills ? studentProfile.skills.length : 5;
+  const skills = (studentProfile && studentProfile.skills) ? studentProfile.skills : [];
+  const skillCount = skills.length > 0 ? skills.length : 5;
   const dsaScore = Math.min(100, Math.max(50, skillCount * 12));
 
   // 2. GitHub Score
