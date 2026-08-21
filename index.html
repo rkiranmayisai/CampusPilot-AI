@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="color-scheme: dark;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>CampusPilot AI — Autonomous Student Opportunity & Career Platform</title>
+
+  <!-- Global Dark Scrollbar Styles -->
+  <style>
+    :root, html, body {
+      color-scheme: dark !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: rgba(99, 102, 241, 0.4) transparent !important;
+    }
+    *::-webkit-scrollbar {
+      width: 6px !important;
+      height: 6px !important;
+    }
+    *::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-track-piece {
+      background: transparent !important;
+    }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.4) !important;
+      border-radius: 9999px !important;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.8) !important;
+    }
+    *::-webkit-scrollbar-button {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    *::-webkit-scrollbar-corner {
+      background: transparent !important;
+    }
+  </style>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Direct Client-Side PDF Generation Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <!-- Custom Glassmorphism Design System Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#090d16] text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
+  <!-- Application Mounted Root -->
+  <div id="app-root"></div>
+  <div id="modal-root"></div>
+
+
+  <!-- Three.js 3D WebGL Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- JavaScript Services & App Scripts (Supports direct file:// protocol loading) -->
+  <script src="js/data/mockOpportunities.js"></script>
+  <script src="js/services/resumeProfileEngine.js"></script>
+  <script src="js/services/profile3dEngine.js"></script>
+  <script src="js/services/internshipFilterEngine.js"></script>
+  <script src="js/services/eligibilityEngine.js"></script>
+  <script src="js/services/resumeTailorEngine.js"></script>
+  <script src="js/services/applicationFormEngine.js"></script>
+  <script src="js/services/autoApplyEngine.js"></script>
+  <script src="js/services/portalVerificationService.js"></script>
+  <script src="js/services/applicationTracker.js"></script>
+  <script src="js/services/applicationHistoryService.js"></script>
+  <script src="js/services/notificationEngine.js"></script>
+  <script src="js/services/careerRoadmapEngine.js"></script>
+  <script src="js/services/placementReadinessEngine.js"></script>
+  <script src="js/services/mockInterviewEngine.js"></script>
+  <script src="js/services/interview3dEngine.js"></script>
+  <script src="js/services/skillGapEngine.js"></script>
+  <script src="js/services/githubAnalyzer.js"></script>
+  <script src="js/services/teamFinder.js"></script>
+  <script src="js/services/courseRecommender.js"></script>
+  <script src="js/services/deadlineReminderService.js"></script>
+  <script src="js/services/matchingEngine.js"></script>
+  <script src="js/services/resumeAnalyzer.js"></script>
+  <script src="js/services/resumeStudioEngine.js"></script>
+  <script src="js/services/emailNotificationService.js"></script>
+  <script src="js/services/securityShield.js"></script>
+  
+  <!-- Main Application UI Router -->
+  <script src="app.js"></script>
+</body>
+</html>

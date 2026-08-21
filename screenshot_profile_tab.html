@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>body { margin: 0; background: #090d16; }</style>
+</head>
+<body>
+  <iframe id="frame" src="http://localhost:8080" style="width: 1400px; height: 900px; border: none;"></iframe>
+  <script>
+    const frame = document.getElementById('frame');
+    frame.onload = () => {
+      setTimeout(() => {
+        const win = frame.contentWindow;
+        if (win && win.switchTab) {
+          win.switchTab('profile');
+        }
+      }, 500);
+    };
+  </script>
+</body>
+</html>
