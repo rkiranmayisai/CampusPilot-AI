@@ -40,7 +40,8 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === 'object') {
-          if (parsed.registeredEmail && (parsed.registeredEmail.toLowerCase().includes("saiprakash") || parsed.registeredEmail.toLowerCase().includes("neelavar"))) {
+          const emailLow = (parsed.registeredEmail || '').toLowerCase();
+          if (emailLow.includes("sai") || emailLow.includes("prakash") || emailLow.includes("neelavar")) {
             parsed.registeredEmail = DEFAULT_PREFERENCES.registeredEmail;
             try { localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(parsed)); } catch(e) {}
           }

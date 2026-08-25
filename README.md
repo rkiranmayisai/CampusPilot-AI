@@ -480,7 +480,7 @@ This runs the web application along with the local email dispatch handler:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/rkiranmayisai/CampusPilot-AI.git
+git clone https://github.com/your-username/CampusPilot-AI.git
 
 # 2. Navigate to project root
 cd "CampusPilot-AI"
@@ -532,7 +532,7 @@ Distributed under the **MIT License**. See `LICENSE` for details.
 
 ### Author & Developer
 - **CampusPilot AI Team**
-- **Repository**: [CampusPilot-AI](https://github.com/rkiranmayisai/CampusPilot-AI)
+- **Repository**: [CampusPilot-AI](https://github.com/your-username/CampusPilot-AI)
 - **Role**: AI Engineering & Software Architecture
 
 ---

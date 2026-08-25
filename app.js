@@ -150,17 +150,23 @@
     purgeAllLocalData: () => ({ success: true })
   };
 
-  const LOCAL_PROFILE_KEY = "campuspilot_student_profile_v3";
+  const LOCAL_PROFILE_KEY = "campuspilot_student_profile_v5";
 
   // Auto-clean any legacy cached storage from previous builds
   (function sanitizeLegacyBrowserStorage() {
     try {
-      ["campuspilot_student_profile_v1", "campuspilot_student_profile_v2", "campuspilot_email_preferences_v1", "campuspilot_email_preferences_v2", "campuspilot_application_history_v1", "campuspilot_student_profile_v3"].forEach(key => {
-        const item = localStorage.getItem(key);
-        if (item && (item.toLowerCase().includes("saiprakash") || item.toLowerCase().includes("neelavar"))) {
-          localStorage.removeItem(key);
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith("campuspilot_") || key.includes("profile") || key.includes("history"))) {
+          const item = localStorage.getItem(key);
+          if (item) {
+            const itemLow = item.toLowerCase();
+            if (itemLow.includes("sai") || itemLow.includes("prakash") || itemLow.includes("neelavar") || key.includes("v1") || key.includes("v2") || key.includes("v3")) {
+              localStorage.removeItem(key);
+            }
+          }
         }
-      });
+      }
     } catch (e) {
       // Storage access blocked or not available
     }
@@ -174,7 +180,7 @@
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === 'object') {
           const str = JSON.stringify(parsed).toLowerCase();
-          if (str.includes("saiprakash") || str.includes("neelavar")) {
+          if (str.includes("sai") || str.includes("prakash") || str.includes("neelavar")) {
             localStorage.removeItem(LOCAL_PROFILE_KEY);
           } else {
             return buildStudentProfile(parsed);
@@ -4763,7 +4769,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300 pt-1">
                   <div><span class="text-slate-500">From:</span> <strong>${selectedEmail.senderName || 'CampusPilot AI'}</strong> &lt;${selectedEmail.senderEmail || 'alerts@campuspilot.ai'}&gt;</div>
-                  <div><span class="text-slate-500">To:</span> <strong>${selectedEmail.recipientName || 'Sai'}</strong> &lt;<span class="text-indigo-300">${selectedEmail.recipientEmail}</span>&gt;</div>
+                  <div><span class="text-slate-500">To:</span> <strong>${selectedEmail.recipientName || (studentProfile && studentProfile.fullName) || 'Candidate'}</strong> &lt;<span class="text-indigo-300">${selectedEmail.recipientEmail}</span>&gt;</div>
                   <div><span class="text-slate-500">Time:</span> ${selectedEmail.formattedDate || 'Today'} at ${selectedEmail.formattedTime || 'Recent'}</div>
                   <div><span class="text-slate-500">Carrier Relay:</span> <strong class="text-emerald-400">FormSubmit.co / TLS 256-Bit</strong></div>
                 </div>
@@ -4796,7 +4802,7 @@
   // 2. NOTIFICATION PREFERENCES SUB-VIEW
   function renderPreferencesSubView(prefs) {
     const cats = prefs.categories || {};
-    const displayEmail = studentProfile.email || prefs.registeredEmail || "student@gmail.com";
+    const displayEmail = studentProfile.email || prefs.registeredEmail || "student@example.com";
 
     return `
       <div class="glass-panel p-8 max-w-4xl mx-auto space-y-8 border-indigo-500/40">
@@ -4828,7 +4834,7 @@
                        id="pref-email-input" 
                        value="${displayEmail}" 
                        required 
-                       placeholder="e.g. sai@gmail.com" 
+                       placeholder="e.g. alex.chen@example.com" 
                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white font-mono text-xs focus:border-indigo-500 focus:outline-none" />
               </div>
               <div>
