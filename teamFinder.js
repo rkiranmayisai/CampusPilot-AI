@@ -612,18 +612,18 @@
       targetEvent: "Smart India Hackathon 2026",
       hackathonId: "hack-sih-2026",
       duration: "48 Hours",
-      creatorName: "Sai Prakash Neelavar",
-      creatorEmail: "saiprakashneelavar@gmail.com",
+      creatorName: "Alex Chen",
+      creatorEmail: "alex.chen@example.com",
       creatorRole: "Team Lead & Frontend Developer",
       projectIdea: "Edge AI computer vision system for real-time crop disease diagnosis in rural areas with offline vernacular voice assistance and fertilizer recommendations.",
       lookingFor: ["FastAPI", "Python", "Machine Learning", "UI/UX Design", "Raspberry Pi"],
       members: [
-        { name: "Sai Prakash Neelavar", role: "Team Lead & Frontend", email: "saiprakashneelavar@gmail.com", skills: ["React", "JavaScript", "Tailwind CSS", "Python"] },
+        { name: "Alex Chen", role: "Team Lead & Frontend", email: "alex.chen@example.com", skills: ["React", "JavaScript", "Tailwind CSS", "Python"] },
         { name: "Rahul Verma", role: "Backend & Systems Architect", email: "rahul.verma@university.edu", skills: ["FastAPI", "Python", "PostgreSQL", "Docker"] },
         { name: "Priya Nair", role: "AI & Computer Vision Specialist", email: "priya.nair@university.edu", skills: ["PyTorch", "Computer Vision", "TensorFlow Lite"] }
       ],
       maxMembers: 6,
-      contactTelegram: "@saiprakash_ai",
+      contactTelegram: "@alexchen_ai",
       createdAt: "2026-08-16T10:00:00Z",
       status: "OPEN",
       progress: {
@@ -635,17 +635,17 @@
       tasks: [
         { id: "task-1", title: "Train Leaf Disease CNN Model (95%+ accuracy)", assignee: "Priya Nair", status: "DONE", pillar: "AI / ML" },
         { id: "task-2", title: "Build FastAPI backend & offline SQLite cache", assignee: "Rahul Verma", status: "DONE", pillar: "Backend" },
-        { id: "task-3", title: "Create responsive drag-and-drop diagnostic UI", assignee: "Sai Prakash", status: "IN_PROGRESS", pillar: "Frontend" },
+        { id: "task-3", title: "Create responsive drag-and-drop diagnostic UI", assignee: "Alex Chen", status: "IN_PROGRESS", pillar: "Frontend" },
         { id: "task-4", title: "Design vernacular voice assistance UI & icons", assignee: "Unassigned", status: "TODO", pillar: "UI/UX" },
         { id: "task-5", title: "Prepare 10-slide SIH judging pitch deck", assignee: "Unassigned", status: "TODO", pillar: "Pitch" }
       ],
       discussions: [
-        { sender: "Sai Prakash", role: "Lead", message: "Team, dataset preprocessing is complete. Rahul, let's sync on the REST API contracts tonight!", time: "2 hours ago" },
+        { sender: "Alex Chen", role: "Lead", message: "Team, dataset preprocessing is complete. Rahul, let's sync on the REST API contracts tonight!", time: "2 hours ago" },
         { sender: "Rahul Verma", role: "Backend", message: "API endpoints are live on port 8000. Docs available at /docs.", time: "1 hour ago" },
         { sender: "Priya Nair", role: "AI Specialist", message: "Model weights exported to ONNX format for fast edge inference. Size is only 14MB!", time: "30 mins ago" }
       ],
       links: {
-        github: "https://github.com/saiprakash/agrovision-ai-sih",
+        github: "https://github.com/alexchen/agrovision-ai-sih",
         figma: "https://figma.com/@agrovision",
         pitchDeck: "https://docs.google.com/presentation/d/agrovision-pitch"
       },
@@ -657,7 +657,7 @@
           applicantRole: "UI/UX & Pitch Lead",
           applicantSkills: ["Figma", "UI/UX Design", "Pitch Presentation"],
           matchScore: 94,
-          pitchMessage: "Hey Sai! I reviewed your AgroVision SIH idea. I can design intuitive regional UI in Figma and craft a winning 10-slide pitch deck for judges.",
+          pitchMessage: "Hey Alex! I reviewed your AgroVision SIH idea. I can design intuitive regional UI in Figma and craft a winning 10-slide pitch deck for judges.",
           submittedAt: "25 mins ago"
         }
       ]
@@ -818,7 +818,7 @@
   // 6. Natural Language AI Team Builder
   function buildAITeamFromPrompt(promptText, userProfile) {
     const p = (promptText || "").toLowerCase();
-    const studentName = userProfile.fullName || userProfile.name || "Sai Prakash Neelavar";
+    const studentName = userProfile.fullName || userProfile.name || "Alex Chen";
     const studentSkills = userProfile.skills || ["React", "JavaScript", "Tailwind CSS"];
 
     // Extract Domain
@@ -861,7 +861,7 @@
       ].filter(r => r.peer);
     }
 
-    const synergyExplanation = `This 4-person dream team achieves a **95% Team Balance Score**. Sai Prakash drives core frontend and product architecture, ${recommendedPeers[0].peer.name} covers ${recommendedPeers[0].roleNeeded}, ${recommendedPeers[1].peer.name} guarantees ${recommendedPeers[1].roleNeeded}, and ${recommendedPeers[2].peer.name} secures ${recommendedPeers[2].roleNeeded}. Zero skill overlap and 100% judging criteria coverage.`;
+    const synergyExplanation = `This 4-person dream team achieves a **95% Team Balance Score**. ${studentName} drives core frontend and product architecture, ${recommendedPeers[0].peer.name} covers ${recommendedPeers[0].roleNeeded}, ${recommendedPeers[1].peer.name} guarantees ${recommendedPeers[1].roleNeeded}, and ${recommendedPeers[2].peer.name} secures ${recommendedPeers[2].roleNeeded}. Zero skill overlap and 100% judging criteria coverage.`;
 
     return {
       prompt: promptText,
@@ -936,8 +936,8 @@
   // 8. Team Creation, Requests & Workspace Actions
   function createTeam(teamData, userProfile) {
     const teams = loadTeams();
-    const studentName = userProfile.fullName || userProfile.name || "Sai Prakash Neelavar";
-    const studentEmail = userProfile.email || "saiprakashneelavar@gmail.com";
+    const studentName = userProfile.fullName || userProfile.name || "Alex Chen";
+    const studentEmail = userProfile.email || "alex.chen@example.com";
 
     const newTeam = {
       id: `team-${Date.now()}`,
@@ -984,8 +984,8 @@
     const team = teams.find(t => t.id === teamId);
     if (!team) return { success: false, reason: "TEAM_NOT_FOUND" };
 
-    const studentName = userProfile.fullName || userProfile.name || "Sai Prakash Neelavar";
-    const studentEmail = userProfile.email || "saiprakashneelavar@gmail.com";
+    const studentName = userProfile.fullName || userProfile.name || "Alex Chen";
+    const studentEmail = userProfile.email || "alex.chen@example.com";
 
     if (team.members.some(m => m.email.toLowerCase() === studentEmail.toLowerCase())) {
       return { success: false, reason: "ALREADY_MEMBER" };
@@ -1095,7 +1095,7 @@
     const team = teams.find(t => t.id === teamId);
     if (!team) return { success: false, reason: "TEAM_NOT_FOUND" };
 
-    const leadName = teamLeadProfile.fullName || team.creatorName || "Sai Prakash Neelavar";
+    const leadName = teamLeadProfile.fullName || team.creatorName || "Alex Chen";
 
     // Trigger Email Invitation
     try {
@@ -1171,7 +1171,7 @@
 
     if (!team.discussions) team.discussions = [];
     const msg = {
-      sender: senderName || "Sai Prakash",
+      sender: senderName || "Alex Chen",
       role: role || "Team Member",
       message: messageText,
       time: "Just now"

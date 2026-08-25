@@ -295,18 +295,15 @@
 
   // 5. 7 PROFESSIONAL TEMPLATE GENERATORS
   function renderResumeHTML(resumeData, templateId = "modern-developer") {
-    let rawName = resumeData.fullName || resumeData.name || "SAI PRAKASH NEELAVAR";
-    let name = rawName.replace(/SAIPRAKASHNEELAVAR/gi, "SAI PRAKASH NEELAVAR").replace(/SAIPRAKASH NEELAVAR/gi, "SAI PRAKASH NEELAVAR").trim();
-    if (!name.includes(' ') && name.toUpperCase().includes('SAIPRAKASH')) {
-      name = "SAI PRAKASH NEELAVAR";
-    }
+    let rawName = resumeData.fullName || resumeData.name || "Alex Chen";
+    let name = rawName.trim();
 
-    const email = resumeData.email || "saiprakash@gmail.com";
+    const email = resumeData.email || "alex.chen@example.com";
     const phone = resumeData.phone || "+91 98765 43210";
-    const location = resumeData.location || resumeData.education?.city || "Hyderabad, India";
+    const location = resumeData.location || resumeData.education?.city || "Bengaluru, India";
 
-    const github = resumeData.socialLinks?.github || resumeData.github || "github.com/saiprakash";
-    const linkedin = resumeData.socialLinks?.linkedin || resumeData.linkedin || "linkedin.com/in/saiprakash";
+    const github = resumeData.socialLinks?.github || resumeData.github || "github.com/alexchen-dev";
+    const linkedin = resumeData.socialLinks?.linkedin || resumeData.linkedin || "linkedin.com/in/alexchen";
 
     const emailHref = email ? `mailto:${email.trim()}` : '';
     const phoneHref = phone ? `tel:${phone.trim().replace(/\s+/g, '')}` : '';
@@ -453,8 +450,8 @@
     // TEMPLATE 2: MODERN DEVELOPER (Visual 2-Column Split matching reference image input_file_0.png)
     if (activeTemplate === "modern-developer") {
       const nameParts = name.split(' ');
-      const firstName = nameParts[0] || 'SAI PRAKASH';
-      const lastName = nameParts.slice(1).join(' ') || 'NEELAVAR';
+      const firstName = nameParts[0] || 'ALEX';
+      const lastName = nameParts.slice(1).join(' ') || 'CHEN';
 
       return `
         <div class="resume-sheet modern-sheet font-sans text-slate-900 bg-white p-8 max-w-4xl mx-auto shadow-2xl leading-relaxed text-xs">
@@ -535,7 +532,7 @@
               <!-- Quote Card -->
               <div class="bg-slate-900 text-white p-3.5 rounded-xl text-center space-y-1 border border-slate-800">
                 <p class="text-[11px] italic font-semibold">"Learn today, build tomorrow, make an impact."</p>
-                <span class="text-[10px] text-blue-300 font-bold block">— Sai Prakash</span>
+                <span class="text-[10px] text-blue-300 font-bold block">— Alex Chen</span>
               </div>
             </div>
 
@@ -1153,14 +1150,14 @@
   function autoFixResumeTo95(resumeData) {
     const fixedData = { ...resumeData };
 
-    fixedData.fullName = (fixedData.fullName || "SAI PRAKASH NEELAVAR").replace(/SAIPRAKASHNEELAVAR/gi, "SAI PRAKASH NEELAVAR");
+    fixedData.fullName = (fixedData.fullName || "Alex Chen").trim();
 
     if (!fixedData.socialLinks) fixedData.socialLinks = {};
     if (!fixedData.socialLinks.github && !fixedData.github) {
-      fixedData.socialLinks.github = "github.com/saiprakash";
+      fixedData.socialLinks.github = "github.com/alexchen-dev";
     }
     if (!fixedData.socialLinks.linkedin && !fixedData.linkedin) {
-      fixedData.socialLinks.linkedin = "linkedin.com/in/saiprakash";
+      fixedData.socialLinks.linkedin = "linkedin.com/in/alexchen";
     }
 
     fixedData.projects = [

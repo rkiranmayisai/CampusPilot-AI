@@ -7,7 +7,7 @@
 
   // Default Student Notification Preferences
   const DEFAULT_PREFERENCES = {
-    registeredEmail: "saiprakashneelavar@gmail.com",
+    registeredEmail: "alex.chen@example.com",
     minMatchScore: 80, // Minimum match score % to trigger an email
     frequency: "immediate", // "immediate" | "daily_digest" | "weekly_digest"
     categories: {
@@ -39,14 +39,20 @@
       const raw = localStorage.getItem(PREFERENCES_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        return {
-          ...DEFAULT_PREFERENCES,
-          ...parsed,
-          categories: {
-            ...DEFAULT_PREFERENCES.categories,
-            ...(parsed.categories || {})
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.registeredEmail && (parsed.registeredEmail.toLowerCase().includes("saiprakash") || parsed.registeredEmail.toLowerCase().includes("neelavar"))) {
+            parsed.registeredEmail = DEFAULT_PREFERENCES.registeredEmail;
+            try { localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(parsed)); } catch(e) {}
           }
-        };
+          return {
+            ...DEFAULT_PREFERENCES,
+            ...parsed,
+            categories: {
+              ...DEFAULT_PREFERENCES.categories,
+              ...(parsed.categories || {})
+            }
+          };
+        }
       }
     } catch (e) {
       console.warn("Could not load email preferences:", e);
@@ -181,7 +187,7 @@
         </div>
         <div><span class="header-badge">${badgeText}</span></div>
         <h1 class="headline">${title}</h1>
-        <p class="subheadline">Hi <strong>${studentName || 'Sai'}</strong>, here is your real-time automated career alert matching your profile.</p>
+        <p class="subheadline">Hi <strong>${studentName || 'Alex'}</strong>, here is your real-time automated career alert matching your profile.</p>
       </div>
 
       <div class="content">
@@ -208,7 +214,7 @@
 
   // 1. 🎯 Internship Match Email Generator
   function generateInternshipMatchEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const opp = data.opportunity || {};
     const matchScore = data.matchScore || 91;
@@ -285,7 +291,7 @@
 
   // 2. 💼 Job Match Email Generator
   function generateJobMatchEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const job = data.job || data.opportunity || {};
     const matchScore = data.matchScore || 94;
@@ -353,7 +359,7 @@
 
   // 3. ⏰ Deadline Reminder Email Generator
   function generateDeadlineReminderEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const opp = data.opportunity || {};
     const daysLeft = data.daysLeft !== undefined ? data.daysLeft : (opp.deadlineDays || 1);
@@ -404,7 +410,7 @@
 
   // 4. 🎤 Interview Alert Email Generator
   function generateInterviewReminderEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const company = data.company || "NVIDIA";
     const role = data.role || "CUDA Systems & AI Intern";
@@ -471,7 +477,7 @@
 
   // 5. 📄 Resume Score Improvement Email Generator
   function generateResumeScoreUpdateEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const newScore = data.newScore || 87;
     const oldScore = data.oldScore || 72;
@@ -536,7 +542,7 @@
 
   // 6. 📚 Daily Study Reminder Email Generator
   function generateStudyReminderEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const tasksRemaining = data.tasksRemaining || 2;
     const focusTopic = data.focusTopic || "Dynamic Programming & Microservices Architecture";
@@ -592,7 +598,7 @@
 
   // 7. 🧠 Skill Gap Alert Email Generator
   function generateSkillGapAlertEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const skillName = data.skillName || "React.js & TailwindCSS";
     const targetRole = studentProfile?.targetRole || data.targetRole || "Full Stack & AI Engineer";
@@ -648,7 +654,7 @@
 
   // 8. 🚀 Opportunity Digest Email Generator
   function generateOpportunityDigestEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
     const targetEmail = studentProfile?.email || "student@gmail.com";
     const opportunities = data.opportunities || [];
     const count = opportunities.length || 5;
@@ -705,8 +711,8 @@
 
   // 9. 👥 Team Join Request Email Generator
   function generateTeamJoinRequestEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
-    const targetEmail = studentProfile?.email || "saiprakashneelavar@gmail.com";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
+    const targetEmail = studentProfile?.email || "alex.chen@example.com";
     const applicantName = data.applicantName || "Rahul Verma";
     const applicantRole = data.applicantRole || "Full Stack & DevOps Developer";
     const applicantSkills = data.applicantSkills || ["Node.js", "PostgreSQL", "Docker", "REST APIs"];
@@ -769,11 +775,11 @@
 
   // 10. 🎉 Team Join Accepted Email Generator
   function generateTeamJoinAcceptedEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
-    const targetEmail = studentProfile?.email || "saiprakashneelavar@gmail.com";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
+    const targetEmail = studentProfile?.email || "alex.chen@example.com";
     const teamName = data.teamName || "AI Resume Analyzer";
     const projectTitle = data.projectTitle || "Autonomous Career Agent";
-    const teamLeadName = data.teamLeadName || "Sai Prakash Neelavar";
+    const teamLeadName = data.teamLeadName || "Alex Chen";
     const roleAssigned = data.roleAssigned || "Backend & Database Lead";
     const communicationChannel = data.communicationChannel || "https://t.me/campuspilot_teams";
     const kickoffUrl = data.kickoffUrl || "https://campuspilot.ai/#teams";
@@ -831,8 +837,8 @@
 
   // 11. 🚀 Team Invitation Email Generator
   function generateTeamInvitationEmail(data, studentProfile) {
-    const studentName = studentProfile?.fullName || studentProfile?.name || "Sai";
-    const targetEmail = studentProfile?.email || "saiprakashneelavar@gmail.com";
+    const studentName = studentProfile?.fullName || studentProfile?.name || "Alex";
+    const targetEmail = studentProfile?.email || "alex.chen@example.com";
     const senderName = data.senderName || "Aarav Sharma";
     const teamName = data.teamName || "NeuralChains";
     const hackathonName = data.hackathonName || "ETHIndia 2026";
@@ -891,7 +897,7 @@
   // 12. 🛡️ Official Company Application Confirmation Email Generator
   function generateApplicationConfirmationEmail(data, studentProfile) {
     const studentName = studentProfile?.fullName || studentProfile?.name || "Student";
-    const targetEmail = studentProfile?.email || "saiprakashneelavar@gmail.com";
+    const targetEmail = studentProfile?.email || "alex.chen@example.com";
     const comp = data.company || "Company";
     const role = data.role || "Software Engineering Intern";
     const extId = data.externalApplicationId || `${comp.substring(0,4).toUpperCase()}-REQ-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -980,8 +986,8 @@
 
   function sendEmailNotification(type, payload = {}, studentProfile = {}, options = {}) {
     const preferences = getNotificationPreferences();
-    const targetEmail = studentProfile.email || preferences.registeredEmail || "saiprakashneelavar@gmail.com";
-    const studentName = studentProfile.fullName || studentProfile.name || "Sai Prakash Neelavar";
+    const targetEmail = studentProfile.email || preferences.registeredEmail || "alex.chen@example.com";
+    const studentName = studentProfile.fullName || studentProfile.name || "Alex Chen";
 
     // 1. Preference Category Validation
     const categoryKeyMap = {

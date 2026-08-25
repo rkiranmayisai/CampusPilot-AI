@@ -4,9 +4,9 @@ function buildStudentProfile(rawProfileData = {}) {
   const raw = rawProfileData || {};
   const edu = raw.education || {};
   const defaults = {
-    fullName: raw.name || raw.fullName || "Sai Prakash Neelavar",
-    name: raw.name || raw.fullName || "Sai Prakash Neelavar",
-    email: raw.email || "saiprakashneelavar@gmail.com",
+    fullName: raw.name || raw.fullName || "Alex Chen",
+    name: raw.name || raw.fullName || "Alex Chen",
+    email: raw.email || "alex.chen@example.com",
     phone: raw.phone || "+91 98765 43210",
     degree: raw.degree || edu.degree || "B.Tech",
     branch: raw.branch || edu.branch || "Computer Science & Engineering",
@@ -35,11 +35,11 @@ function buildStudentProfile(rawProfileData = {}) {
     certifications: raw.certifications || ["Google AI & Machine Learning Professional Certificate"],
     experience: raw.experience || [],
     socialLinks: {
-      github: raw.github || raw.socialLinks?.github || "https://github.com/saiprakashneelavar",
-      linkedin: raw.linkedin || raw.socialLinks?.linkedin || "https://linkedin.com/in/saiprakashneelavar",
-      portfolio: raw.portfolio || raw.socialLinks?.portfolio || "https://saiprakash.dev"
+      github: raw.github || raw.socialLinks?.github || "https://github.com/alexchen-dev",
+      linkedin: raw.linkedin || raw.socialLinks?.linkedin || "https://linkedin.com/in/alexchen",
+      portfolio: raw.portfolio || raw.socialLinks?.portfolio || "https://alexchen.dev"
     },
-    resumeFile: raw.resumeFile || "Sai_Prakash_Resume_2026.pdf",
+    resumeFile: raw.resumeFile || "Alex_Chen_Resume_2026.pdf",
     resumeVerified: true,
     targetRoles: raw.targetRoles || ["AI/ML Engineering Intern", "Software Developer Intern", "Full Stack AI Engineer"]
   };

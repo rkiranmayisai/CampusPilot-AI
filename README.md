@@ -480,7 +480,7 @@ This runs the web application along with the local email dispatch handler:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/saiprakashneelavar/CampusPilot-AI.git
+git clone https://github.com/rkiranmayisai/CampusPilot-AI.git
 
 # 2. Navigate to project root
 cd "CampusPilot-AI"
@@ -531,8 +531,8 @@ CampusPilot AI utilizes a custom **3D Dark Glassmorphism Design System** defined
 Distributed under the **MIT License**. See `LICENSE` for details.
 
 ### Author & Developer
-- **Sai Prakash Neelavar**
-- **Repository**: [CampusPilot-AI](https://github.com/saiprakashneelavar/CampusPilot-AI)
+- **CampusPilot AI Team**
+- **Repository**: [CampusPilot-AI](https://github.com/rkiranmayisai/CampusPilot-AI)
 - **Role**: AI Engineering & Software Architecture
 
 ---

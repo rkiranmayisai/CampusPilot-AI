@@ -18,7 +18,7 @@ function generateApplicationForm(studentProfile = {}, opportunity = {}, tailored
     githubUrl: social.github || "",
     linkedinUrl: social.linkedin || "",
     portfolioUrl: social.portfolio || "",
-    resumeFileName: profile.resumeFile || "Resume_SaiPrakash.pdf",
+    resumeFileName: profile.resumeFile || "Alex_Chen_Resume_2026.pdf",
     coverSummary: (tailoredData && tailoredData.tailoredSummary) || ""
   };
 

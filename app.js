@@ -9,9 +9,9 @@
     const raw = rawProfileData || {};
     const edu = raw.education || {};
     return {
-      fullName: raw.name || raw.fullName || "Sai Prakash Neelavar",
-      name: raw.name || raw.fullName || "Sai Prakash Neelavar",
-      email: raw.email || "saiprakashneelavar@gmail.com",
+      fullName: raw.name || raw.fullName || "Alex Chen",
+      name: raw.name || raw.fullName || "Alex Chen",
+      email: raw.email || "alex.chen@example.com",
       phone: raw.phone || "+91 98765 43210",
       degree: raw.degree || edu.degree || "B.Tech",
       branch: raw.branch || edu.branch || "Computer Science & Engineering",
@@ -40,11 +40,11 @@
       certifications: raw.certifications || ["Google AI & Machine Learning Professional Certificate"],
       experience: raw.experience || [],
       socialLinks: {
-        github: raw.github || raw.socialLinks?.github || "https://github.com/saiprakashneelavar",
-        linkedin: raw.linkedin || raw.socialLinks?.linkedin || "https://linkedin.com/in/saiprakashneelavar",
-        portfolio: raw.portfolio || raw.socialLinks?.portfolio || "https://saiprakash.dev"
+        github: raw.github || raw.socialLinks?.github || "https://github.com/alexchen-dev",
+        linkedin: raw.linkedin || raw.socialLinks?.linkedin || "https://linkedin.com/in/alexchen",
+        portfolio: raw.portfolio || raw.socialLinks?.portfolio || "https://alexchen.dev"
       },
-      resumeFile: raw.resumeFile || "Sai_Prakash_Resume_2026.pdf",
+      resumeFile: raw.resumeFile || "Alex_Chen_Resume_2026.pdf",
       resumeVerified: true,
       targetRoles: raw.targetRoles || ["AI/ML Engineering Intern", "Software Developer Intern", "Full Stack AI Engineer"]
     };
@@ -150,7 +150,21 @@
     purgeAllLocalData: () => ({ success: true })
   };
 
-  const LOCAL_PROFILE_KEY = "campuspilot_student_profile_v2";
+  const LOCAL_PROFILE_KEY = "campuspilot_student_profile_v3";
+
+  // Auto-clean any legacy cached storage from previous builds
+  (function sanitizeLegacyBrowserStorage() {
+    try {
+      ["campuspilot_student_profile_v1", "campuspilot_student_profile_v2", "campuspilot_email_preferences_v1", "campuspilot_email_preferences_v2", "campuspilot_application_history_v1", "campuspilot_student_profile_v3"].forEach(key => {
+        const item = localStorage.getItem(key);
+        if (item && (item.toLowerCase().includes("saiprakash") || item.toLowerCase().includes("neelavar"))) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      // Storage access blocked or not available
+    }
+  })();
 
   // Load candidate profile from Local Storage (Client-side private storage)
   function getSavedStudentProfile() {
@@ -159,16 +173,21 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === 'object') {
-          return buildStudentProfile(parsed);
+          const str = JSON.stringify(parsed).toLowerCase();
+          if (str.includes("saiprakash") || str.includes("neelavar")) {
+            localStorage.removeItem(LOCAL_PROFILE_KEY);
+          } else {
+            return buildStudentProfile(parsed);
+          }
         }
       }
     } catch (e) {
       console.warn("Could not read local profile:", e);
     }
     return buildStudentProfile({
-      name: "Sai Prakash Neelavar",
-      fullName: "Sai Prakash Neelavar",
-      email: "saiprakashneelavar@gmail.com",
+      name: "Alex Chen",
+      fullName: "Alex Chen",
+      email: "alex.chen@example.com",
       degree: "B.Tech",
       branch: "Computer Science & Engineering",
       year: "Year 3",
@@ -229,13 +248,13 @@
   let isStudioQuickEditOpen = true;
 
   let studioResumeData = {
-    fullName: (studentProfile?.fullName || studentProfile?.name || "SAI PRAKASH NEELAVAR").replace("SAIPRAKASHNEELAVAR", "SAI PRAKASH NEELAVAR"),
-    email: studentProfile?.email || "saiprakash@gmail.com",
+    fullName: (studentProfile?.fullName || studentProfile?.name || "Alex Chen").trim(),
+    email: studentProfile?.email || "alex.chen@example.com",
     phone: studentProfile?.phone || "+91 98765 43210",
-    location: studentProfile?.education?.city || studentProfile?.city || "Hyderabad, India",
+    location: studentProfile?.education?.city || studentProfile?.city || "Bengaluru, India",
     socialLinks: {
-      github: studentProfile?.socialLinks?.github || "github.com/saiprakash",
-      linkedin: studentProfile?.socialLinks?.linkedin || "linkedin.com/in/saiprakash",
+      github: studentProfile?.socialLinks?.github || "github.com/alexchen-dev",
+      linkedin: studentProfile?.socialLinks?.linkedin || "linkedin.com/in/alexchen",
       portfolio: studentProfile?.socialLinks?.portfolio || ""
     },
     education: {
@@ -1118,8 +1137,8 @@
       const sentEmailLogs = emailService?.loadSentEmailLogs ? emailService.loadSentEmailLogs() : [];
       const unreadEmailCount = emailService?.getUnreadEmailCount ? emailService.getUnreadEmailCount() : 0;
 
-      const displayEmail = studentProfile?.email || "saiprakashneelavar@gmail.com";
-      const displayName = studentProfile?.fullName || studentProfile?.name || "Sai Prakash Neelavar";
+      const displayEmail = studentProfile?.email || "alex.chen@example.com";
+      const displayName = studentProfile?.fullName || studentProfile?.name || "Alex Chen";
 
       const tabTitleMap = {
         'autoapply': 'Dashboard',
@@ -1594,7 +1613,7 @@
                     <span class="text-sm">⚡</span>
                     <span class="text-indigo-300">Quick Explorer & Recruiter Demo Login</span>
                   </div>
-                  <p class="text-[11px] text-slate-300">Instant 1-click login with pre-loaded candidate profile (Sai Prakash - NIT 2027) to explore all features.</p>
+                  <p class="text-[11px] text-slate-300">Instant 1-click login with pre-loaded candidate profile (Alex Chen - NIT 2027) to explore all features.</p>
                 </div>
                 <button type="button" onclick="window.quickDemoLogin()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-1.5 shrink-0 border border-indigo-400">
                   <span>⚡</span> <span>1-Click Demo Login</span>
@@ -4985,7 +5004,7 @@
   function renderHoloNexusModal() {
     if (!isHoloNexusModalOpen) return '';
 
-    const studentName = studentProfile.fullName || studentProfile.name || "Sai Prakash Neelavar";
+    const studentName = studentProfile.fullName || studentProfile.name || "Alex Chen";
     const studentSkills = studentProfile.skills || [];
     const highYieldCatalog = [
       { name: "PyTorch", category: "AI / Deep Learning", matchBoost: "+12% ATS" },
@@ -5843,7 +5862,7 @@
                     <div class="w-16 h-16 rounded-full bg-slate-900 border-2 border-cyan-400/60 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20">
                       👤
                     </div>
-                    <span class="text-[11px] font-bold text-white">${studentProfile.fullName || "Sai Prakash Neelavar"}</span>
+                    <span class="text-[11px] font-bold text-white">${studentProfile.fullName || "Alex Chen"}</span>
                     <span class="text-[9px] text-emerald-400 font-mono">✓ Eye Contact Center • Posture Aligned</span>
                   </div>
                   <div class="text-[10px] font-mono text-slate-400 space-y-1 relative z-10 pt-1">
@@ -6186,7 +6205,7 @@
     const hackathons = teamFinder.HACKATHONS_CATALOG();
     const filteredTeams = teamFinder.filterTeamPosts(allTeams, teamFilterCategory, teamFilterHackathon, teamSearchQuery);
 
-    const userEmail = (studentProfile.email || "saiprakashneelavar@gmail.com").toLowerCase();
+    const userEmail = (studentProfile.email || "alex.chen@example.com").toLowerCase();
     const myLedTeams = allTeams.filter(t => (t.creatorEmail || "").toLowerCase() === userEmail);
     const myJoinedTeams = allTeams.filter(t => (t.members || []).some(m => (m.email || "").toLowerCase() === userEmail));
     const allMyTeams = Array.from(new Set([...myLedTeams, ...myJoinedTeams]));
@@ -6320,7 +6339,7 @@
 
   // 1. Explore Teams & Hackathon Discovery Hub View
   function renderExploreTeamsView(filteredTeams, allTeams, hackathons, studentProfile) {
-    const userEmail = (studentProfile.email || "saiprakashneelavar@gmail.com").toLowerCase();
+    const userEmail = (studentProfile.email || "alex.chen@example.com").toLowerCase();
     const categories = ["All", "Hackathon", "College Project", "Capstone", "Startup", "Open Source"];
     const hackathonCategories = ["All", "National", "Global", "Web3", "Corporate"];
 
@@ -6794,7 +6813,7 @@
               <div class="p-4 rounded-xl bg-slate-950 border border-indigo-500/40 space-y-3 relative">
                 <span class="absolute top-3 right-3 badge bg-indigo-900 text-indigo-200 text-[9px] font-bold">YOU (LEAD)</span>
                 <div>
-                  <h4 class="font-extrabold text-white text-sm">${studentProfile.fullName || 'Sai Prakash'}</h4>
+                  <h4 class="font-extrabold text-white text-sm">${studentProfile.fullName || 'Alex Chen'}</h4>
                   <span class="text-xs text-indigo-300 font-bold block">${aiTeamBuilderResult.userRole}</span>
                 </div>
                 <div class="flex flex-wrap gap-1">
@@ -6975,7 +6994,7 @@
 
   // 4. My Teams & AI Skill Gap Analyzer View
   function renderMyTeamsAndGapAnalysisView(allTeams, studentProfile) {
-    const userEmail = (studentProfile.email || "saiprakashneelavar@gmail.com").toLowerCase();
+    const userEmail = (studentProfile.email || "alex.chen@example.com").toLowerCase();
     const myLedTeams = allTeams.filter(t => (t.creatorEmail || "").toLowerCase() === userEmail);
     const myJoinedTeams = allTeams.filter(t => (t.members || []).some(m => (m.email || "").toLowerCase() === userEmail));
     const allMyTeams = Array.from(new Set([...myLedTeams, ...myJoinedTeams]));
@@ -7144,7 +7163,7 @@
 
   // 5. Interactive Team Workspace & Cockpit View
   function renderTeamWorkspaceCockpitView(allTeams, studentProfile) {
-    const userEmail = (studentProfile.email || "saiprakashneelavar@gmail.com").toLowerCase();
+    const userEmail = (studentProfile.email || "alex.chen@example.com").toLowerCase();
     const activeTeam = allTeams.find(t => t.id === activeWorkspaceTeamId) || allTeams[0];
     const progress = activeTeam.progress || { ideation: 100, architecture: 50, prototype: 20, pitchDeck: 0 };
     const tasks = activeTeam.tasks || [];
@@ -7486,7 +7505,7 @@
 
           <div>
             <label class="block font-bold text-slate-300 mb-1">Communication Channel (Telegram / Discord) *</label>
-            <input type="text" id="create-team-contact" value="@saiprakash_ai" placeholder="e.g. @username or Discord handle" class="form-input bg-slate-950 text-cyan-300 font-mono" />
+            <input type="text" id="create-team-contact" value="@alexchen_ai" placeholder="e.g. @username or Discord handle" class="form-input bg-slate-950 text-cyan-300 font-mono" />
           </div>
 
           <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
@@ -7780,7 +7799,7 @@
       creatorRole: "Team Lead & Frontend Architect",
       lookingFor: aiTeamBuilderResult.recommendedTeammates.map(r => r.roleNeeded),
       projectIdea: aiTeamBuilderResult.prompt,
-      contactTelegram: "@saiprakash_ai"
+      contactTelegram: "@alexchen_ai"
     }, studentProfile);
 
     // Send invitations to all 3 candidates
@@ -7806,7 +7825,7 @@
   window.addWorkspaceTask = function(teamId) {
     const title = document.getElementById('new-task-title-input')?.value;
     if (title) {
-      teamFinder.addTeamTask(teamId, title, studentProfile.fullName || "Sai Prakash", "General");
+      teamFinder.addTeamTask(teamId, title, studentProfile.fullName || "Alex Chen", "General");
       showToast("✓ Task added to Kanban board!");
       renderApp();
     }
@@ -7820,7 +7839,7 @@
   window.postWorkspaceDiscussion = function(teamId) {
     const text = document.getElementById('team-discussion-input')?.value;
     if (text) {
-      teamFinder.addTeamDiscussionMessage(teamId, studentProfile.fullName || "Sai Prakash", "Lead", text);
+      teamFinder.addTeamDiscussionMessage(teamId, studentProfile.fullName || "Alex Chen", "Lead", text);
       renderApp();
     }
   };
@@ -8152,10 +8171,10 @@
                             </span>
                           </div>
                           <h3 class="text-lg font-black text-white tracking-tight mt-1" id="live-card-name">
-                            ${studentProfile.fullName || 'Sai Prakash Neelavar'}
+                            ${studentProfile.fullName || 'Alex Chen'}
                           </h3>
                           <p class="text-xs text-slate-400 font-mono" id="live-card-email">
-                            ${studentProfile.email || 'saiprakash@gmail.com'}
+                            ${studentProfile.email || 'alex.chen@example.com'}
                           </p>
                         </div>
                       </div>
@@ -8239,8 +8258,8 @@
                         <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
                           <span class="text-slate-500 text-[10px] uppercase block">Verified Social Channels</span>
                           <div class="flex flex-wrap gap-2 text-slate-300">
-                            <span>GitHub: <strong class="text-white">${studentProfile.socialLinks?.github ? 'Connected ✓' : 'alex-dev'}</strong></span> •
-                            <span>LinkedIn: <strong class="text-white">${studentProfile.socialLinks?.linkedin ? 'Linked ✓' : 'saiprakash'}</strong></span>
+                            <span>GitHub: <strong class="text-white">${studentProfile.socialLinks?.github ? 'Connected ✓' : 'alexchen'}</strong></span> •
+                            <span>LinkedIn: <strong class="text-white">${studentProfile.socialLinks?.linkedin ? 'Linked ✓' : 'alexchen'}</strong></span>
                           </div>
                         </div>
                       </div>
@@ -8356,8 +8375,8 @@
                       </div>
                     </div>
                     <div>
-                      <h2 class="text-2xl font-black text-white tracking-tight">${studentProfile?.fullName || studentProfile?.name || 'Sai Prakash Neelavar'}</h2>
-                      <p class="text-xs text-indigo-300 font-mono font-semibold">${studentProfile?.email || 'saiprakash@gmail.com'}</p>
+                      <h2 class="text-2xl font-black text-white tracking-tight">${studentProfile?.fullName || studentProfile?.name || 'Alex Chen'}</h2>
+                      <p class="text-xs text-indigo-300 font-mono font-semibold">${studentProfile?.email || 'alex.chen@example.com'}</p>
                       <p class="text-xs text-slate-400 mt-1">${studentProfile?.education?.degree || studentProfile?.degree || 'B.Tech'} in ${studentProfile?.education?.branch || studentProfile?.branch || 'CSE'} • GPA ${studentProfile?.education?.gpa || studentProfile?.gpa || '8.9'}</p>
                     </div>
                   </div>
@@ -8733,7 +8752,7 @@
 
                   <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
                     <span class="text-slate-500">Quality: <strong class="text-emerald-400">${repo.qualityScore || 85}/100</strong></span>
-                    <a href="https://github.com/saiprakashneelavar/${repo.name}" target="_blank" class="text-indigo-400 font-bold hover:underline">
+                    <a href="https://github.com/alexchen-dev/${repo.name}" target="_blank" class="text-indigo-400 font-bold hover:underline">
                       View Repo ➔
                     </a>
                   </div>
@@ -10372,7 +10391,7 @@
   window.openCleanResumeTab = function() {
     const studioService = window.CampusPilotServices || {};
     const htmlContent = studioService.renderResumeHTML ? studioService.renderResumeHTML(studioResumeData, studioSelectedTemplate) : "";
-    const name = studioResumeData.fullName || "Sai Prakash Neelavar";
+    const name = studioResumeData.fullName || "Alex Chen";
 
     try {
       const win = window.open('', '_blank');
@@ -10562,9 +10581,9 @@
 
   window.quickDemoLogin = function() {
     studentProfile = buildStudentProfile({
-      name: "Sai Prakash Neelavar",
-      fullName: "Sai Prakash Neelavar",
-      email: "saiprakashneelavar@gmail.com",
+      name: "Alex Chen",
+      fullName: "Alex Chen",
+      email: "alex.chen@example.com",
       degree: "B.Tech",
       branch: "Computer Science & Engineering",
       year: "Year 3",
@@ -10575,7 +10594,7 @@
     });
     persistStudentProfile(studentProfile);
     isOnboarded = true;
-    showToast("🎉 Logged in as Sai Prakash Neelavar (NIT 2027)!");
+    showToast("🎉 Logged in as Alex Chen (NIT 2027)!");
     renderApp();
   };
 
@@ -11225,7 +11244,7 @@
           teamName: "AI Resume Analyzer",
           projectTitle: "Autonomous Career Agent",
           matchScore: 91,
-          pitchMessage: "Hey Sai! I have deep experience in PostgreSQL and REST APIs and would love to build the backend and database architecture for your AI Resume Analyzer.",
+          pitchMessage: "Hey Alex! I have deep experience in PostgreSQL and REST APIs and would love to build the backend and database architecture for your AI Resume Analyzer.",
           reviewUrl: "#teams"
         };
         break;
@@ -11233,7 +11252,7 @@
         payload = {
           teamName: "AI Resume Analyzer",
           projectTitle: "Autonomous Career Agent",
-          teamLeadName: "Sai Prakash Neelavar",
+          teamLeadName: "Alex Chen",
           roleAssigned: "Backend & Database Architect",
           communicationChannel: "https://t.me/campuspilot_teams",
           kickoffUrl: "#teams"
@@ -11427,12 +11446,16 @@
     isOnboarded = false;
     onboardingStep = 1;
     studentProfile = buildStudentProfile({});
-    localStorage.removeItem(LOCAL_PROFILE_KEY);
+    ["campuspilot_student_profile_v1", "campuspilot_student_profile_v2", "campuspilot_student_profile_v3", LOCAL_PROFILE_KEY].forEach(k => {
+      try { localStorage.removeItem(k); } catch(e) {}
+    });
     renderApp();
   };
 
   window.clearPrivateData = function() {
-    localStorage.removeItem(LOCAL_PROFILE_KEY);
+    ["campuspilot_student_profile_v1", "campuspilot_student_profile_v2", "campuspilot_student_profile_v3", LOCAL_PROFILE_KEY].forEach(k => {
+      try { localStorage.removeItem(k); } catch(e) {}
+    });
     studentProfile = buildStudentProfile({});
     isOnboarded = false;
     onboardingStep = 1;
@@ -12119,7 +12142,7 @@
   window.playVoiceBriefing = function() {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const studentName = studentProfile.fullName || studentProfile.name || "Sai Prakash";
+      const studentName = studentProfile.fullName || studentProfile.name || "Alex Chen";
       const skills = (studentProfile.skills || []).slice(0, 5).join(", ");
       const text = `Candidate profile verified for ${studentName}. Real-time ATS match vector stands at 88 percent. Primary skill competencies detected in: ${skills}. Autonomous recommendation: Proceed with FAANG and high-growth engineering applications.`;
       

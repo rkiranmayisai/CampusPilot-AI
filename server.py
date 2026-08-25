@@ -22,7 +22,7 @@ class CampusPilotHandler(http.server.SimpleHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             try:
                 payload = json.loads(post_data.decode('utf-8'))
-                to_addr = payload.get('to', 'saiprakashneelavar@gmail.com')
+                to_addr = payload.get('to', 'alex.chen@example.com')
                 subject = payload.get('subject', 'CampusPilot AI Alert')
                 print(f"\n[CampusPilot Server] 📧 Email Dispatched to: {to_addr}")
                 print(f"  Subject: {subject}")
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     print("=" * 65)
     print("🤖 CampusPilot AI — Autonomous Career Platform Server")
     print(f"🚀 Serving app locally at: http://localhost:{PORT}")
-    print(f"📧 Destination Email: saiprakashneelavar@gmail.com")
+    print(f"📧 Destination Email: alex.chen@example.com")
     print("=" * 65)
     with socketserver.TCPServer(("", PORT), CampusPilotHandler) as httpd:
         try:

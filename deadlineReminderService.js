@@ -2,7 +2,7 @@
 
 let REMINDER_SETTINGS = {
   phone: "+91 98765 43210",
-  telegramHandle: "@saiprakash_dev",
+  telegramHandle: "@alexchen_dev",
   notifyWhatsApp: true,
   notifyTelegram: true,
   alertThresholdHours: 48
