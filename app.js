@@ -1640,11 +1640,11 @@
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Full Name</label>
-                  <input type="text" id="ob-name" value="${studentProfile.fullName || ''}" class="form-input" placeholder="Enter your name..." />
+                  <input type="text" id="ob-name" value="${studentProfile.fullName && studentProfile.fullName !== 'Alex Chen' ? studentProfile.fullName : ''}" class="form-input" placeholder="Enter your full name..." />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Email Address (For Direct Alerts)</label>
-                  <input type="email" id="ob-email" value="${studentProfile.email || ''}" class="form-input font-mono" placeholder="Enter your email..." />
+                  <input type="email" id="ob-email" value="${studentProfile.email && !studentProfile.email.includes('example.com') ? studentProfile.email : ''}" class="form-input font-mono" placeholder="Enter your email address..." />
                 </div>
               </div>
 
@@ -1661,18 +1661,18 @@
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Branch / Specialization</label>
-                  <input type="text" id="ob-branch" value="${studentProfile?.education?.branch || studentProfile?.branch || ''}" class="form-input" placeholder="Enter your branch (e.g. Computer Science)..." />
+                  <input type="text" id="ob-branch" value="${studentProfile?.education?.branch && studentProfile?.education?.branch !== 'Computer Science & Engineering' ? studentProfile?.education?.branch : ''}" class="form-input" placeholder="Enter your branch (e.g. Computer Science)..." />
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">Graduation Year</label>
-                  <input type="text" id="ob-grad" value="${studentProfile.education?.graduationYear || '2027'}" class="form-input font-mono" placeholder="e.g. 2027..." />
+                  <input type="text" id="ob-grad" value="${studentProfile.education?.graduationYear && studentProfile.education?.graduationYear !== '2027' ? studentProfile.education.graduationYear : '2027'}" class="form-input font-mono" placeholder="e.g. 2027..." />
                 </div>
                 <div>
                   <label class="block font-bold text-slate-400 mb-1">City / Location</label>
-                  <input type="text" id="ob-city" value="${studentProfile.education?.city || ''}" class="form-input" placeholder="Enter your city (e.g. Hyderabad)..." />
+                  <input type="text" id="ob-city" value="${studentProfile.education?.city && studentProfile.education?.city !== 'Bengaluru, India' ? studentProfile.education.city : ''}" class="form-input" placeholder="Enter your city (e.g. Hyderabad)..." />
                 </div>
               </div>
 
