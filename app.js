@@ -575,24 +575,24 @@
   }
 
   const PORTAL_SCAN_LIST = [
-    "Google DeepMind (careers.google.com)",
-    "NVIDIA Workday (nvidia.wd5.myworkdayjobs.com)",
-    "OpenAI Frontier Labs (openai.com/careers)",
-    "Microsoft Azure (careers.microsoft.com)",
-    "Tesla Autopilot (tesla.com/careers)",
-    "Apple Neural Engine (apple.com/careers)",
-    "Stripe Payments (stripe.com/jobs)",
-    "Databricks Lakehouse (databricks.com/company/careers)",
-    "Meta Reality Labs (metacareers.com)",
-    "Amazon AWS (amazon.jobs)",
-    "Anthropic Safety (anthropic.com/careers)",
-    "Snowflake Cloud (snowflake.com/careers)",
-    "Figma Canvas Engine (figma.com/careers)",
-    "Uber Logistics (uber.com/careers)",
-    "Netflix Systems (jobs.netflix.com)",
-    "Qualcomm NPU (qualcomm.com/careers)",
-    "AMD ROCm Compute (amd.com/careers)",
-    "Adobe Firefly AI (adobe.com/careers)"
+    "Google DeepMind",
+    "NVIDIA Workday",
+    "OpenAI Labs",
+    "Microsoft Azure",
+    "Tesla Careers",
+    "Apple Systems",
+    "Stripe Payments",
+    "Databricks AI",
+    "Meta Reality Labs",
+    "Amazon AWS",
+    "Anthropic Claude",
+    "Snowflake Cloud",
+    "Figma Canvas",
+    "Uber Logistics",
+    "Netflix Systems",
+    "Qualcomm AI",
+    "AMD Compute",
+    "Adobe Firefly"
   ];
 
   let portalScanIndex = 0;
@@ -717,23 +717,23 @@
         }
         const pulseCounterEl = document.getElementById('live-pulse-counter');
         if (pulseCounterEl) {
-          pulseCounterEl.textContent = `Pulse #${liveScanPulseCount} (1s)`;
+          pulseCounterEl.textContent = `Pulse #${liveScanPulseCount}`;
         }
 
-        // 2. Discover new opportunity at a clean 45-second background interval
+        // 2. Discover new opportunity at a clean background interval (no auto page jump)
         const now = Date.now();
-        if (now - lastDiscoveryTimestamp > 45000) {
+        if (now - lastDiscoveryTimestamp > 60000) {
           lastDiscoveryTimestamp = now;
           const isUserTyping = Boolean(document.activeElement && 
             (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable));
           const isModalOpen = Boolean(document.getElementById('modal-root') && document.getElementById('modal-root').children.length > 0);
 
           if (!isUserTyping && !isModalOpen && activeTab === 'autoapply') {
-            triggerDiscoverNewInternship(true, true);
+            triggerDiscoverNewInternship(true, false); // Do not force full re-render
           }
         }
       }
-    }, 1000);
+    }, 3000);
   }
 
   window.toggleLiveAutoScan = function() {
@@ -1250,10 +1250,16 @@
                 <h1 class="text-2xl font-extrabold text-white tracking-tight">${currentHeading}</h1>
               </div>
 
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2.5">
+                <!-- My Applications Quick Status Button -->
+                <button onclick="window.switchTab('applications')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/60 transition-all text-xs font-bold shadow-sm cursor-pointer" title="View what you applied to and check application status">
+                  <span>📑</span> <span class="hidden sm:inline">My Applications</span>
+                  ${(applicationHistory && applicationHistory.length > 0) ? `<span class="bg-indigo-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">${applicationHistory.length}</span>` : ''}
+                </button>
+
                 <!-- Security & Privacy Vault Trust Button -->
                 <button onclick="window.openSecurityModal()" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 transition-all text-xs font-bold font-mono shadow-sm" title="Your resume and candidate data are 100% encrypted in your local browser sandbox">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block"></span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block shadow-[0_0_6px_#34d399]"></span>
                   <span>🛡️ 100% Safe & Secure</span>
                 </button>
 
@@ -1303,12 +1309,6 @@
 
             <!-- 3D QUANTUM HOLO-NEXUS & SPATIAL COMMAND MODAL -->
             ${isHoloNexusModalOpen ? renderHoloNexusModal() : ''}
-
-            <!-- CUSTOM OFFICIAL INTERNSHIP URL PARSER MODAL -->
-            ${isCustomUrlModalOpen ? renderCustomUrlModal() : ''}
-
-            <!-- HOW TO APPLY INTERACTIVE GUIDE MODAL -->
-            ${isHowToApplyModalOpen ? renderHowToApplyModal() : ''}
 
             <!-- General Toast Notification -->
             ${notificationToastMessage ? `
@@ -2982,41 +2982,41 @@
           </div>
         </div>
 
-        <!-- REAL-TIME 1-SECOND VERIFIED INTERNSHIP ALERT NOTIFICATION BANNER -->
-        <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/90 via-slate-900/90 to-purple-950/90 border border-indigo-500/40 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3.5">
+        <!-- REAL-TIME 1-SECOND VERIFIED INTERNSHIP ALERT NOTIFICATION BANNER (Rock-Solid Zero-Shift Layout) -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/90 via-slate-900/90 to-purple-950/90 border border-indigo-500/40 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-3.5" style="min-height: 84px;">
+          <div class="flex items-center gap-3.5 min-w-0 flex-1 overflow-hidden">
             <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-xl flex-none shadow-lg shadow-indigo-500/30">
               🔔
             </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="badge bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[9px] font-mono flex items-center gap-1.5 font-bold">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block"></span>
-                  🟢 1s REAL-TIME LIVE SYNC ACTIVE
+            <div class="min-w-0 flex-1 space-y-1 overflow-hidden">
+              <div class="flex items-center gap-2 flex-nowrap overflow-hidden">
+                <span class="badge bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[9px] font-mono flex items-center gap-1.5 font-bold shrink-0 whitespace-nowrap">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block shadow-[0_0_6px_#34d399]"></span>
+                  LIVE SYNC ACTIVE
                 </span>
-                <span id="live-portal-ticker" class="badge bg-indigo-950 text-indigo-300 border border-indigo-500/30 text-[9px] font-mono font-bold">
-                  📡 Scanning: Google DeepMind Careers (1s Pulse)
+                <span id="live-portal-ticker" class="badge bg-indigo-950 text-indigo-300 border border-indigo-500/30 text-[9px] font-mono font-bold shrink-0 whitespace-nowrap max-w-[200px] sm:max-w-[280px] truncate" title="Active Career Portal Scanner">
+                  📡 Scanning: Google DeepMind
                 </span>
-                <span id="live-pulse-counter" class="badge bg-purple-950 text-purple-300 border border-purple-500/30 text-[9px] font-mono">
-                  Real-Time Sync
+                <span id="live-pulse-counter" class="badge bg-purple-950 text-purple-300 border border-purple-500/30 text-[9px] font-mono shrink-0 whitespace-nowrap">
+                  Pulse
                 </span>
               </div>
-              <p class="text-xs text-white font-bold mt-1">
+              <p class="text-xs text-white font-bold truncate max-w-2xl">
                 ${(notifEngine && notifEngine.getUnreadCount ? notifEngine.getUnreadCount() : 0) > 0 
                   ? `You have <strong class="text-emerald-400 font-mono text-sm">${notifEngine.getUnreadCount()}</strong> unread verified high-match internship alert(s) in your Notification Center!` 
-                  : `Real-time 1-second verified opportunity scanner active. Continually discovering fresh openings from official career portals...`}
+                  : `Real-time verified opportunity scanner active. Continually discovering fresh openings from official career portals...`}
               </p>
             </div>
           </div>
 
-          <div class="flex items-center gap-2.5 flex-none flex-wrap">
-            <button onclick="window.toggleLiveAutoScan()" class="btn-secondary text-xs py-2 px-3 ${isLiveAutoScanActive ? 'text-emerald-300 border-emerald-500/40 bg-emerald-950/30' : 'text-slate-400 border-slate-700 bg-slate-900'} flex items-center gap-1.5 font-mono">
-              <span>${isLiveAutoScanActive ? '🟢' : '⏸'}</span> ${isLiveAutoScanActive ? '1s Live Sync: ON' : 'Sync: PAUSED'}
+          <div class="flex items-center gap-2 flex-none flex-wrap">
+            <button onclick="window.toggleLiveAutoScan()" class="btn-secondary text-xs py-2 px-3 ${isLiveAutoScanActive ? 'text-emerald-300 border-emerald-500/40 bg-emerald-950/30' : 'text-slate-400 border-slate-700 bg-slate-900'} flex items-center gap-1.5 font-mono shrink-0">
+              <span>${isLiveAutoScanActive ? '🟢' : '⏸'}</span> ${isLiveAutoScanActive ? '1s Sync: ON' : 'Sync: PAUSED'}
             </button>
-            <button onclick="window.toggleNotificationCenter()" class="btn-primary text-xs py-2 px-4 bg-indigo-600 border-indigo-400 font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30">
+            <button onclick="window.toggleNotificationCenter()" class="btn-primary text-xs py-2 px-3.5 bg-indigo-600 border-indigo-400 font-bold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 shrink-0">
               <span>🔔</span> View Alerts
             </button>
-            <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2 px-3 text-cyan-300 border-cyan-500/30 hover:bg-cyan-950/40 flex items-center gap-1.5 font-bold">
+            <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2 px-3 text-cyan-300 border-cyan-500/30 hover:bg-cyan-950/40 flex items-center gap-1.5 font-bold shrink-0">
               <span>⚡</span> Scan Instant Match
             </button>
           </div>
@@ -3024,7 +3024,7 @@
 
         <!-- AUTO-APPLY CENTER SECTION -->
         <div class="space-y-5 pt-2">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-black text-white tracking-tight flex items-center gap-2">
                 <span>Auto-Apply Center</span>
@@ -3033,18 +3033,21 @@
               <p class="text-xs text-slate-400 mt-1">AI-assisted verified opportunity match & student-controlled auto-fill engine.</p>
             </div>
 
-            <div class="flex items-center gap-3 flex-wrap">
-              <button onclick="window.openHowToApplyModal()" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-amber-500/40 text-amber-300 hover:bg-amber-950/50 flex items-center gap-1.5 shadow-sm transition-all" title="View Step-by-Step Instructions on How to Apply">
-                <span>📖</span> <span>How to Apply Guide</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="window.switchTab('applications')" class="btn-secondary text-xs py-2 px-3 font-bold border-emerald-500/50 text-emerald-300 hover:bg-emerald-950/60 flex items-center gap-1.5 shadow-sm transition-all shrink-0" title="View all internships you have applied to and check their live status">
+                <span>📑</span> <span>My Applications & Status (${(applicationHistory || []).length})</span>
               </button>
-              <button onclick="window.openCustomUrlModal()" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-indigo-500/50 text-indigo-300 hover:bg-indigo-950/60 flex items-center gap-1.5 shadow-sm transition-all" title="Paste any official company career portal link to auto-extract details and auto-apply">
+              <button onclick="window.openHowToApplyModal()" class="btn-secondary text-xs py-2 px-3 font-bold border-amber-500/40 text-amber-300 hover:bg-amber-950/50 flex items-center gap-1.5 shadow-sm transition-all shrink-0" title="View Step-by-Step Instructions on How to Apply">
+                <span>📖</span> <span>How to Apply</span>
+              </button>
+              <button onclick="window.openCustomUrlModal()" class="btn-secondary text-xs py-2 px-3 font-bold border-indigo-500/50 text-indigo-300 hover:bg-indigo-950/60 flex items-center gap-1.5 shadow-sm transition-all shrink-0" title="Paste any official company career portal link to auto-extract details and auto-apply">
                 <span>🔗</span> <span>+ Provide Official Link</span>
               </button>
-              <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-1.5 shadow-sm transition-all" title="Scan and add fresh new internship postings from official career portals">
-                <span>🔄</span> Discover New Internships
+              <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2 px-3 font-bold border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-1.5 shadow-sm transition-all shrink-0" title="Scan and add fresh new internship postings from official career portals">
+                <span>🔄</span> Discover New
               </button>
-              <button onclick="window.triggerBatchAutoApply()" class="btn-primary text-xs py-2.5 px-5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg shadow-indigo-600/40 border border-indigo-300/30 whitespace-nowrap transition-all">
-                ⚡ 1-Click Auto-Apply to All (${unappliedOpps.length} Ready)
+              <button onclick="window.triggerBatchAutoApply()" class="btn-primary text-xs py-2 px-4 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg shadow-indigo-600/40 border border-indigo-300/30 whitespace-nowrap transition-all shrink-0">
+                ⚡ 1-Click Auto-Apply (${unappliedOpps.length})
               </button>
             </div>
           </div>
@@ -3176,7 +3179,7 @@
                 <div class="flex items-center gap-2 mb-0.5 flex-wrap">
                   <span class="badge badge-match-fire uppercase font-bold text-[10px]">AUTO-FILL & REVIEW APPLICATION</span>
                   <span class="badge ${app.internshipType === 'paid' ? 'badge-paid' : 'badge-unpaid'} uppercase font-bold text-[10px]">${app.internshipType}</span>
-                  <button type="button" onclick="window.openHowToApplyModal()" class="badge bg-amber-950 text-amber-300 border border-amber-500/40 text-[10px] font-bold hover:bg-amber-900/50 cursor-pointer transition-all">
+                  <button type="button" onclick="window.openHowToApplyModal('auto', event)" class="badge bg-amber-950 text-amber-300 border border-amber-500/40 text-[10px] font-bold hover:bg-amber-900/50 cursor-pointer transition-all">
                     📖 How to Apply Guide ➔
                   </button>
                 </div>
@@ -13097,7 +13100,11 @@
   };
 
   // Window Controller Actions for Official Internship Link Parser Modal
-  window.openCustomUrlModal = function() {
+  window.openCustomUrlModal = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     isCustomUrlModalOpen = true;
     if (!customUrlInput) {
       customUrlInput = "https://careers.google.com/jobs/results/software-engineer-intern-2027";
@@ -13110,16 +13117,18 @@
       document.body.appendChild(modalRoot);
     }
     modalRoot.innerHTML = renderCustomUrlModal();
-    renderApp();
   };
 
-  window.closeCustomUrlModal = function() {
+  window.closeCustomUrlModal = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     isCustomUrlModalOpen = false;
     let modalRoot = document.getElementById('modal-root');
     if (modalRoot) {
       modalRoot.innerHTML = '';
     }
-    renderApp();
   };
 
   let customUrlDebounceTimer = null;
@@ -13141,7 +13150,11 @@
     }, 120);
   };
 
-  window.handleParseTrigger = function() {
+  window.handleParseTrigger = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     const input = document.getElementById('custom-url-input-box')?.value || customUrlInput;
     if (input) {
       customUrlInput = input;
@@ -13150,23 +13163,29 @@
       if (modalRoot && isCustomUrlModalOpen) {
         modalRoot.innerHTML = renderCustomUrlModal();
       }
-      renderApp();
       showToast("⚡ Official portal details auto-detected!");
     }
   };
 
-  window.setSampleCustomUrl = function(sampleUrl) {
+  window.setSampleCustomUrl = function(sampleUrl, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     customUrlInput = sampleUrl;
     customUrlParsedData = parseOfficialInternshipUrl(sampleUrl);
     let modalRoot = document.getElementById('modal-root');
     if (modalRoot && isCustomUrlModalOpen) {
       modalRoot.innerHTML = renderCustomUrlModal();
     }
-    renderApp();
     showToast("✓ Verified portal sample loaded!");
   };
 
-  window.submitCustomUrlOpportunity = function() {
+  window.submitCustomUrlOpportunity = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     const rawUrl = document.getElementById('custom-url-input-box')?.value || customUrlInput || "https://careers.google.com";
     const company = document.getElementById('custom-opp-company')?.value || "Tech Enterprise";
     const title = document.getElementById('custom-opp-title')?.value || "Software Engineering Intern";
@@ -13206,7 +13225,7 @@
       if (notifEngine && typeof notifEngine.processOpportunityNotification === 'function') {
         notifEngine.processOpportunityNotification(newOpp, studentProfile, services);
       }
-    } catch(e) {}
+    } catch(err) {}
 
     window.closeCustomUrlModal();
     showToast(`🎉 Imported official internship '${title} at ${company}'! 1-Click Auto-Apply ready.`);
@@ -13214,7 +13233,11 @@
   };
 
   // Window Controller Actions for How to Apply Guide Modal
-  window.openHowToApplyModal = function(initialTab = 'auto') {
+  window.openHowToApplyModal = function(initialTab = 'auto', e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     isHowToApplyModalOpen = true;
     howToApplyActiveTab = initialTab || 'auto';
     let modalRoot = document.getElementById('modal-root');
@@ -13224,25 +13247,34 @@
       document.body.appendChild(modalRoot);
     }
     modalRoot.innerHTML = renderHowToApplyModal();
-    renderApp();
   };
 
-  window.closeHowToApplyModal = function() {
+  window.closeHowToApplyModal = function(e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     isHowToApplyModalOpen = false;
     let modalRoot = document.getElementById('modal-root');
     if (modalRoot) {
-      modalRoot.innerHTML = '';
+      if (activeReviewApplication) {
+        modalRoot.innerHTML = renderReviewAndApplyModal();
+      } else {
+        modalRoot.innerHTML = '';
+      }
     }
-    renderApp();
   };
 
-  window.setHowToApplyTab = function(tab) {
+  window.setHowToApplyTab = function(tab, e) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
     howToApplyActiveTab = tab;
     let modalRoot = document.getElementById('modal-root');
     if (modalRoot && isHowToApplyModalOpen) {
       modalRoot.innerHTML = renderHowToApplyModal();
     }
-    renderApp();
   };
 
   document.addEventListener('DOMContentLoaded', () => {
