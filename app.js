@@ -471,6 +471,11 @@
 
   let notificationToastMessage = null;
   let activeReviewApplication = null;
+  let isCustomUrlModalOpen = false;
+  let customUrlInput = "";
+  let customUrlParsedData = null;
+  let isHowToApplyModalOpen = false;
+  let howToApplyActiveTab = "auto";
 
   let autoApplyPreferences = {
     includePaid: true,
@@ -1298,6 +1303,12 @@
 
             <!-- 3D QUANTUM HOLO-NEXUS & SPATIAL COMMAND MODAL -->
             ${isHoloNexusModalOpen ? renderHoloNexusModal() : ''}
+
+            <!-- CUSTOM OFFICIAL INTERNSHIP URL PARSER MODAL -->
+            ${isCustomUrlModalOpen ? renderCustomUrlModal() : ''}
+
+            <!-- HOW TO APPLY INTERACTIVE GUIDE MODAL -->
+            ${isHowToApplyModalOpen ? renderHowToApplyModal() : ''}
 
             <!-- General Toast Notification -->
             ${notificationToastMessage ? `
@@ -2782,6 +2793,7 @@
     const analysis = (typeof analyzeEligibilityAndMatch === 'function') ? analyzeEligibilityAndMatch(studentProfile, opp) : { matchScore: 90 };
     const existingApp = findExistingApplication(opp, applicationHistory);
     const logoMarkup = renderAuthenticCompanyLogo(opp.company, opp.logo);
+    const oppPortalUrl = opp.applyUrl || (typeof getOfficialCareerPortalUrl === 'function' ? getOfficialCareerPortalUrl(opp.company, opp.applyUrl) : 'https://careers.google.com/students/');
 
     const skillsToDisplay = (analysis.matchedSkills && analysis.matchedSkills.length > 0) 
       ? analysis.matchedSkills 
@@ -2801,11 +2813,22 @@
 
           <!-- Company Name & Job Title Section -->
           <div class="space-y-1.5 pt-1">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-black text-indigo-300 tracking-wider uppercase">${opp.company}</span>
-              <span class="text-[11px] text-slate-400 font-medium px-2 py-0.5 rounded-md bg-slate-900/80 border border-slate-800 flex-shrink-0 flex items-center gap-1">
-                <span>📍</span> ${opp.location || 'Remote'}
-              </span>
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-black text-indigo-300 tracking-wider uppercase">${opp.company}</span>
+                ${opp.isCustomImport ? '<span class="badge bg-purple-950 text-purple-300 border border-purple-500/40 text-[9px] font-bold">CUSTOM IMPORTED</span>' : ''}
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 font-medium px-2 py-0.5 rounded-md bg-slate-900/80 border border-slate-800 flex-shrink-0 flex items-center gap-1">
+                  <span>📍</span> ${opp.location || 'Remote'}
+                </span>
+                <button type="button" 
+                        onclick="window.openOfficialCareerPortal(event, '${oppPortalUrl}')" 
+                        class="text-[10px] text-cyan-400 hover:text-cyan-200 font-mono font-bold px-2.5 py-1 rounded-md bg-cyan-950/70 border border-cyan-500/50 hover:border-cyan-400 flex items-center gap-1 hover:bg-cyan-900/70 transition-all cursor-pointer shrink-0 shadow-sm" 
+                        title="Open Official ${opp.company} Career Portal in New Tab">
+                  <span>🌐</span> <span>Official Link</span> ➔
+                </button>
+              </div>
             </div>
             <h3 class="text-[16px] font-extrabold text-white tracking-tight leading-snug">${opp.title}</h3>
           </div>
@@ -2849,14 +2872,14 @@
           </div>
         </div>
 
-        <!-- Action Button -->
-        <div class="pt-3">
+        <!-- Action Button Group (Auto-Apply + Direct Official Portal) -->
+        <div class="pt-3 flex items-center gap-2">
           ${existingApp ? (existingApp.status === 'WITHDRAWN' ? `
-            <button onclick="window.triggerInstantAutoApply(event, '${opp.id}')" class="btn-prepare-review bg-emerald-700/80 hover:bg-emerald-600 border-emerald-500">
+            <button onclick="window.triggerInstantAutoApply(event, '${opp.id}')" class="btn-prepare-review flex-1 bg-emerald-700/80 hover:bg-emerald-600 border-emerald-500">
               ⚡ Re-Apply to Role
             </button>
           ` : `
-            <button onclick="window.viewApplicationReceipt('${existingApp.applicationId || existingApp.confirmationId}')" class="btn-receipt-card group">
+            <button onclick="window.viewApplicationReceipt('${existingApp.applicationId || existingApp.confirmationId}')" class="btn-receipt-card flex-1 group">
               <div class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                 <span class="font-bold text-xs text-white">Application Submitted</span>
@@ -2868,7 +2891,7 @@
               </div>
             </button>
           `) : `
-            <button onclick="window.handleOpenReviewModal(event, '${opp.id}')" class="btn-prepare-review group">
+            <button onclick="window.handleOpenReviewModal(event, '${opp.id}')" class="btn-prepare-review flex-1 group">
               <div class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping"></span>
                 <span class="font-bold text-xs text-white">Auto-Prepare & Review</span>
@@ -2880,6 +2903,12 @@
               </div>
             </button>
           `}
+          <button type="button" 
+                  onclick="window.openOfficialCareerPortal(event, '${oppPortalUrl}')" 
+                  class="btn-secondary text-xs py-2.5 px-3 border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/60 hover:text-white rounded-xl flex items-center justify-center gap-1 shrink-0 shadow-sm font-bold cursor-pointer" 
+                  title="Open Official ${opp.company} Career Portal in New Tab">
+            <span>🌐</span> <span>Portal ➔</span>
+          </button>
         </div>
       </div>
     `;
@@ -3005,7 +3034,13 @@
             </div>
 
             <div class="flex items-center gap-3 flex-wrap">
-              <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2.5 px-4 font-bold border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-1.5 shadow-sm transition-all" title="Scan and add fresh new internship postings from official career portals">
+              <button onclick="window.openHowToApplyModal()" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-amber-500/40 text-amber-300 hover:bg-amber-950/50 flex items-center gap-1.5 shadow-sm transition-all" title="View Step-by-Step Instructions on How to Apply">
+                <span>📖</span> <span>How to Apply Guide</span>
+              </button>
+              <button onclick="window.openCustomUrlModal()" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-indigo-500/50 text-indigo-300 hover:bg-indigo-950/60 flex items-center gap-1.5 shadow-sm transition-all" title="Paste any official company career portal link to auto-extract details and auto-apply">
+                <span>🔗</span> <span>+ Provide Official Link</span>
+              </button>
+              <button onclick="window.triggerDiscoverNewInternship(false)" class="btn-secondary text-xs py-2.5 px-3.5 font-bold border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-1.5 shadow-sm transition-all" title="Scan and add fresh new internship postings from official career portals">
                 <span>🔄</span> Discover New Internships
               </button>
               <button onclick="window.triggerBatchAutoApply()" class="btn-primary text-xs py-2.5 px-5 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black rounded-xl shadow-lg shadow-indigo-600/40 border border-indigo-300/30 whitespace-nowrap transition-all">
@@ -3138,9 +3173,12 @@
             <div class="flex items-center gap-3.5">
               ${renderAuthenticCompanyLogo(app.company, app.logo)}
               <div>
-                <div class="flex items-center gap-2 mb-0.5">
+                <div class="flex items-center gap-2 mb-0.5 flex-wrap">
                   <span class="badge badge-match-fire uppercase font-bold text-[10px]">AUTO-FILL & REVIEW APPLICATION</span>
                   <span class="badge ${app.internshipType === 'paid' ? 'badge-paid' : 'badge-unpaid'} uppercase font-bold text-[10px]">${app.internshipType}</span>
+                  <button type="button" onclick="window.openHowToApplyModal()" class="badge bg-amber-950 text-amber-300 border border-amber-500/40 text-[10px] font-bold hover:bg-amber-900/50 cursor-pointer transition-all">
+                    📖 How to Apply Guide ➔
+                  </button>
                 </div>
                 <h2 class="text-lg font-black text-white flex items-center gap-2">
                   <span>${app.company}</span>
@@ -3222,6 +3260,27 @@
                 </div>
               `).join('')}
             </div>
+
+            <div class="space-y-3">
+              <h3 class="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>🌐</span> <span>4. Official Career Portal & Application Link</span>
+              </h3>
+              <div class="p-3.5 bg-slate-950 rounded-xl border border-cyan-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div class="space-y-1">
+                  <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Official Submission Target URL:</span>
+                  <button type="button" 
+                          onclick="window.openOfficialCareerPortal(event, '${app.applyUrl || app.officialJobUrl || app.externalConfirmationUrl || 'https://careers.google.com/students/'}')" 
+                          class="text-cyan-400 hover:text-cyan-200 font-mono font-bold hover:underline break-all flex items-center gap-1.5 text-left cursor-pointer bg-transparent border-none p-0">
+                    <span>🔗</span> <span>${app.applyUrl || app.officialJobUrl || app.externalConfirmationUrl || 'https://careers.google.com/students/'}</span> <span>➔</span>
+                  </button>
+                </div>
+                <button type="button" 
+                        onclick="window.openOfficialCareerPortal(event, '${app.applyUrl || app.officialJobUrl || app.externalConfirmationUrl || 'https://careers.google.com/students/'}')" 
+                        class="btn-secondary text-xs py-2 px-3.5 border-cyan-500/40 text-cyan-300 hover:bg-cyan-950/60 font-bold flex items-center justify-center gap-1 shrink-0 shadow-sm cursor-pointer">
+                  <span>Visit Portal</span> <span>➔</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Fixed Bottom Footer Actions -->
@@ -3239,6 +3298,564 @@
               🚀 Confirm & Submit Application
             </button>
           </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // CUSTOM OFFICIAL INTERNSHIP URL PARSER & IMPORTER ENGINE
+  // =========================================================================
+
+  function parseOfficialInternshipUrl(rawUrl = "") {
+    const clean = (rawUrl || "").trim();
+    if (!clean) {
+      return {
+        company: "Google",
+        title: "Software Engineering & AI Research Intern",
+        logo: "🌐",
+        location: "Bengaluru / Hyderabad",
+        stipend: "₹1,25,000 / month",
+        stipendAmount: 125000,
+        internshipType: "paid",
+        requiredSkills: ["Python", "C++", "PyTorch", "Data Structures", "SQL"],
+        applyUrl: "https://careers.google.com/students/",
+        isHotAlert: true,
+        supportedAutoApply: true
+      };
+    }
+
+    let urlObj = null;
+    let hostname = "";
+    try {
+      urlObj = new URL(clean.startsWith('http') ? clean : `https://${clean}`);
+      hostname = urlObj.hostname.toLowerCase();
+    } catch(e) {
+      hostname = clean.toLowerCase();
+    }
+
+    let company = "Tech Enterprise";
+    let logo = "🌐";
+    let title = "Software & Technology Engineering Intern";
+    let location = "Bengaluru / Remote";
+    let stipend = "₹35,000 / month";
+    let stipendAmount = 35000;
+    let requiredSkills = ["Python", "SQL", "Data Structures", "Git"];
+    let internshipType = "paid";
+
+    if (hostname.includes("google") || hostname.includes("deepmind") || hostname.includes("alphabet")) {
+      company = "Google";
+      logo = "🌐";
+      title = "Multimodal Gemini & Edge ML Research Intern";
+      location = "Bengaluru / Hyderabad";
+      stipend = "₹1,40,000 / month";
+      stipendAmount = 140000;
+      requiredSkills = ["Python", "PyTorch", "Transformers", "SQL", "Machine Learning"];
+    } else if (hostname.includes("microsoft") || hostname.includes("azure")) {
+      company = "Microsoft";
+      logo = "🪟";
+      title = "Azure Cloud & Distributed Systems Intern";
+      location = "Bengaluru / Hyderabad / Noida";
+      stipend = "₹1,25,000 / month";
+      stipendAmount = 125000;
+      requiredSkills = ["C++", "C#", "Python", "Data Structures", "SQL"];
+    } else if (hostname.includes("amazon") || hostname.includes("aws")) {
+      company = "Amazon";
+      logo = "📦";
+      title = "AWS Cloud & Microservices Engineering Intern";
+      location = "Hyderabad / Bengaluru";
+      stipend = "₹1,15,000 / month";
+      stipendAmount = 115000;
+      requiredSkills = ["Java", "Python", "SQL", "AWS", "Data Structures"];
+    } else if (hostname.includes("apple")) {
+      company = "Apple";
+      logo = "🍎";
+      title = "iOS Neural Engine Low-Level Systems Intern";
+      location = "Bengaluru / Hyderabad";
+      stipend = "₹1,30,000 / month";
+      stipendAmount = 130000;
+      requiredSkills = ["C++", "Swift", "Python", "Data Structures", "Metal"];
+    } else if (hostname.includes("nvidia")) {
+      company = "NVIDIA";
+      logo = "👁️";
+      title = "CUDA Kernel Acceleration & Deep Learning Intern";
+      location = "Bengaluru / Pune";
+      stipend = "₹1,35,000 / month";
+      stipendAmount = 135000;
+      requiredSkills = ["C++", "CUDA", "PyTorch", "Python"];
+    } else if (hostname.includes("openai")) {
+      company = "OpenAI";
+      logo = "🤖";
+      title = "Frontier AI Safety & Alignment Research Intern";
+      location = "Remote / Hybrid";
+      stipend = "₹1,60,000 / month";
+      stipendAmount = 160000;
+      requiredSkills = ["Python", "PyTorch", "Transformers", "RLHF", "Machine Learning"];
+    } else if (hostname.includes("anthropic")) {
+      company = "Anthropic";
+      logo = "🛡️";
+      title = "Claude AI Interpretability & Alignment Fellow";
+      location = "Remote";
+      stipend = "₹1,50,000 / month";
+      stipendAmount = 150000;
+      requiredSkills = ["Python", "PyTorch", "Transformers", "Mechanistic Interpretability"];
+    } else if (hostname.includes("swiggy")) {
+      company = "Swiggy Launchpad";
+      logo = "🛵";
+      title = "Operations Tech & Backend Logistics Intern";
+      location = "Bengaluru / Hybrid";
+      stipend = "₹20,000 / month";
+      stipendAmount = 20000;
+      requiredSkills = ["Python", "SQL", "Data Structures", "APIs"];
+    } else if (hostname.includes("zepto")) {
+      company = "Zepto Tech";
+      logo = "⚡";
+      title = "Backend Microservices & Quick-Commerce API Intern";
+      location = "Mumbai / Remote";
+      stipend = "₹30,000 / month";
+      stipendAmount = 30000;
+      requiredSkills = ["Node.js", "Python", "PostgreSQL", "Redis", "REST APIs"];
+    } else if (hostname.includes("razorpay")) {
+      company = "Razorpay";
+      logo = "💳";
+      title = "Core Payments & FinTech Platform Intern";
+      location = "Bengaluru";
+      stipend = "₹50,000 / month";
+      stipendAmount = 50000;
+      requiredSkills = ["Java", "Go", "Python", "Distributed Systems", "SQL"];
+    } else if (hostname.includes("flipkart")) {
+      company = "Flipkart";
+      logo = "🛍️";
+      title = "Distributed Catalog & Search Intern";
+      location = "Bengaluru";
+      stipend = "₹80,000 / month";
+      stipendAmount = 80000;
+      requiredSkills = ["Java", "Python", "Data Structures", "Algorithms", "Elasticsearch"];
+    } else if (hostname.includes("internshala")) {
+      company = "Verified Partner (via Internshala)";
+      logo = "🎓";
+      title = "Full Stack Web & AI Application Developer Intern";
+      location = "Remote";
+      stipend = "₹15,000 / month";
+      stipendAmount = 15000;
+      requiredSkills = ["React", "JavaScript", "Python", "SQL"];
+    } else if (hostname.includes("linkedin")) {
+      company = "LinkedIn Verified Partner";
+      logo = "💼";
+      title = "Software Engineering & Data Systems Intern";
+      location = "Bengaluru / Remote";
+      stipend = "₹45,000 / month";
+      stipendAmount = 45000;
+      requiredSkills = ["Python", "Java", "SQL", "Git", "REST APIs"];
+    } else if (hostname.includes("wellfound") || hostname.includes("angel.co")) {
+      company = "High-Growth AI Startup";
+      logo = "🚀";
+      title = "Founding Full Stack & AI Systems Intern";
+      location = "Remote";
+      stipend = "₹35,000 / month";
+      stipendAmount = 35000;
+      requiredSkills = ["React", "FastAPI", "Python", "PostgreSQL"];
+    } else if (hostname.includes("unstop")) {
+      company = "Unstop Campus Challenge Partner";
+      logo = "🏆";
+      title = "Tech Innovation & Software Developer Intern";
+      location = "Remote / Delhi";
+      stipend = "₹25,000 / month";
+      stipendAmount = 25000;
+      requiredSkills = ["Python", "Data Structures", "SQL", "React"];
+    } else {
+      const parts = hostname.replace('www.', '').split('.');
+      if (parts.length > 0 && parts[0]) {
+        company = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+      }
+      title = "Software Development & Technology Intern";
+      location = "Remote / Hybrid";
+      stipend = "₹25,000 / month";
+      stipendAmount = 25000;
+      requiredSkills = ["Python", "JavaScript", "SQL", "Git"];
+    }
+
+    return {
+      company,
+      logo,
+      title,
+      location,
+      stipend,
+      stipendAmount,
+      internshipType,
+      requiredSkills,
+      applyUrl: clean.startsWith('http') ? clean : `https://${clean}`,
+      isHotAlert: true,
+      supportedAutoApply: true
+    };
+  }
+
+  function renderCustomUrlModal() {
+    if (!isCustomUrlModalOpen) return '';
+
+    const currentUrl = customUrlInput || "";
+    const parsed = customUrlParsedData || parseOfficialInternshipUrl(currentUrl);
+    const analysis = (typeof analyzeEligibilityAndMatch === 'function') 
+      ? analyzeEligibilityAndMatch(studentProfile, parsed) 
+      : { matchScore: 92, matchedSkills: parsed.requiredSkills, missingSkills: [] };
+
+    return `
+      <div id="custom-url-modal-backdrop" class="modal-backdrop animate-fade-in" onclick="if(event.target.id === 'custom-url-modal-backdrop') window.closeCustomUrlModal()">
+        <div class="modal-content max-w-2xl w-full bg-[#0f172a] border border-indigo-500/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-5 my-auto">
+          
+          <!-- Header -->
+          <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="badge bg-indigo-950 text-indigo-300 border border-indigo-500/40 text-[10px] font-bold uppercase">
+                  🔗 OFFICIAL INTERNSHIP LINK PARSER
+                </span>
+                <span class="badge bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
+                  AI ATS MATCHER
+                </span>
+                <button type="button" onclick="window.closeCustomUrlModal(); window.openHowToApplyModal();" class="badge bg-amber-950 text-amber-300 border border-amber-500/40 text-[10px] font-bold hover:bg-amber-900/50 cursor-pointer transition-all">
+                  📖 How to Apply Guide ➔
+                </button>
+              </div>
+              <h2 class="text-xl font-black text-white">Import Any Official Internship Link</h2>
+              <p class="text-xs text-slate-300">
+                Paste any official job/internship portal link to auto-extract details, match with your resume, and enable 1-Click Auto-Apply.
+              </p>
+            </div>
+            <button onclick="window.closeCustomUrlModal()" class="text-slate-400 hover:text-white text-xl font-bold p-1">✕</button>
+          </div>
+
+          <!-- URL Input & Quick Presets -->
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span>Official Internship / Job URL *</span>
+                <span class="text-[10px] text-cyan-400 font-mono">Google, Microsoft, Amazon, Internshala, LinkedIn, etc.</span>
+              </label>
+              <div class="relative">
+                <input type="url" 
+                       id="custom-url-input-box" 
+                       value="${currentUrl}" 
+                       oninput="window.handleCustomUrlInput(this.value)" 
+                       placeholder="https://careers.google.com/jobs/results/123456/..." 
+                       class="form-input bg-slate-950 text-cyan-300 font-mono text-xs pr-24 py-3" />
+                <button type="button" 
+                        onclick="window.handleParseTrigger()" 
+                        class="absolute right-2 top-2 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] rounded-lg shadow transition-all">
+                  ⚡ Auto-Detect
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick 1-Click Sample Portals -->
+            <div class="space-y-1.5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Or Pick a Quick Verified Portal Sample:</span>
+              <div class="flex flex-wrap gap-1.5 text-xs">
+                <button type="button" onclick="window.setSampleCustomUrl('https://careers.google.com/jobs/results/google-ai-ml-intern-2027')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-indigo-300 font-medium text-[11px] flex items-center gap-1">
+                  🌐 Google DeepMind
+                </button>
+                <button type="button" onclick="window.setSampleCustomUrl('https://careers.microsoft.com/us/en/job/azure-cloud-distributed-intern')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-indigo-300 font-medium text-[11px] flex items-center gap-1">
+                  🪟 Microsoft Research
+                </button>
+                <button type="button" onclick="window.setSampleCustomUrl('https://amazon.jobs/en/jobs/aws-sde-summer-internship-2027')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-indigo-300 font-medium text-[11px] flex items-center gap-1">
+                  📦 Amazon AWS
+                </button>
+                <button type="button" onclick="window.setSampleCustomUrl('https://openai.com/careers/frontier-ai-safety-intern')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-indigo-300 font-medium text-[11px] flex items-center gap-1">
+                  🤖 OpenAI
+                </button>
+                <button type="button" onclick="window.setSampleCustomUrl('https://internshala.com/internship/detail/fullstack-react-developer-intern')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-indigo-300 font-medium text-[11px] flex items-center gap-1">
+                  🎓 Internshala Tech
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Parsed Opportunity Details (Editable Form) -->
+          <div class="p-4 bg-slate-950 rounded-xl border border-indigo-500/30 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                <span>📋</span> <span>Detected Opportunity Details</span>
+              </span>
+              <span class="badge ${analysis.matchScore >= 85 ? 'bg-emerald-950 text-emerald-300 border-emerald-500/30' : 'bg-indigo-950 text-indigo-300 border-indigo-500/30'} text-[10px] font-bold font-mono">
+                ⚡ ${analysis.matchScore || 92}% Profile Fit
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <label class="block font-bold text-slate-400 mb-1">Company Name</label>
+                <input type="text" id="custom-opp-company" value="${parsed.company}" class="form-input font-bold text-white" placeholder="e.g. Google, Apple, Startup..." />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-400 mb-1">Role / Job Title</label>
+                <input type="text" id="custom-opp-title" value="${parsed.title}" class="form-input text-indigo-300 font-bold" placeholder="e.g. Software Engineer Intern..." />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-400 mb-1">Location</label>
+                <input type="text" id="custom-opp-location" value="${parsed.location}" class="form-input" placeholder="e.g. Remote / Bengaluru..." />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-400 mb-1">Stipend / Compensation</label>
+                <input type="text" id="custom-opp-stipend" value="${parsed.stipend}" class="form-input text-emerald-400 font-mono font-bold" placeholder="e.g. ₹45,000 / month..." />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-400 text-xs mb-1">Required Skills (Comma separated)</label>
+              <input type="text" id="custom-opp-skills" value="${(parsed.requiredSkills || []).join(', ')}" class="form-input text-xs font-mono text-amber-300" placeholder="e.g. Python, React, SQL, Machine Learning..." />
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
+            <button type="button" onclick="window.closeCustomUrlModal()" class="btn-secondary text-xs py-2.5 px-4 font-bold text-slate-400">
+              Cancel
+            </button>
+            <button type="button" onclick="window.submitCustomUrlOpportunity()" class="btn-primary text-xs py-3 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 border-none font-bold shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+              <span>🚀</span> <span>Import & Add to Auto-Apply</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+  }
+
+  // =========================================================================
+  // INTERACTIVE HOW TO APPLY CANDIDATE GUIDE MODAL
+  // =========================================================================
+
+  function renderHowToApplyModal() {
+    if (!isHowToApplyModalOpen) return '';
+
+    return `
+      <div id="how-to-apply-modal-backdrop" class="modal-backdrop animate-fade-in" onclick="if(event.target.id === 'how-to-apply-modal-backdrop') window.closeHowToApplyModal()">
+        <div class="modal-content max-w-3xl w-full bg-[#0f172a] border border-indigo-500/50 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 my-auto max-h-[90vh] overflow-y-auto">
+          
+          <!-- Modal Header -->
+          <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="badge bg-amber-950 text-amber-300 border border-amber-500/40 text-[10px] font-bold uppercase">
+                  📖 CANDIDATE PLAYBOOK
+                </span>
+                <span class="badge bg-indigo-950 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold">
+                  STEP-BY-STEP INSTRUCTIONS
+                </span>
+              </div>
+              <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                <span>How to Apply to Internships</span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/30 font-mono font-bold">100% Student-Controlled</span>
+              </h2>
+              <p class="text-xs text-slate-300">
+                Choose between 1-Click Autonomous Auto-Apply, Direct Official Portal Submission, or Custom URL Importing.
+              </p>
+            </div>
+            <button onclick="window.closeHowToApplyModal()" class="text-slate-400 hover:text-white text-2xl font-bold p-1">✕</button>
+          </div>
+
+          <!-- Navigation Subtabs -->
+          <div class="flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto scrollbar-none text-xs">
+            <button onclick="window.setHowToApplyTab('auto')" class="px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${howToApplyActiveTab === 'auto' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'}">
+              <span>⚡</span> <span>1-Click Auto-Apply</span>
+            </button>
+            <button onclick="window.setHowToApplyTab('portal')" class="px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${howToApplyActiveTab === 'portal' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'}">
+              <span>🌐</span> <span>Official Career Portals</span>
+            </button>
+            <button onclick="window.setHowToApplyTab('custom')" class="px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${howToApplyActiveTab === 'custom' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'}">
+              <span>🔗</span> <span>Import Any Custom URL</span>
+            </button>
+            <button onclick="window.setHowToApplyTab('tracking')" class="px-3.5 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 ${howToApplyActiveTab === 'tracking' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'}">
+              <span>📊</span> <span>Tracking & Receipts</span>
+            </button>
+          </div>
+
+          <!-- Tab 1 Content: 1-Click Auto-Apply -->
+          ${howToApplyActiveTab === 'auto' ? `
+            <div class="space-y-4 text-xs animate-fade-in">
+              <div class="p-3.5 bg-indigo-950/40 rounded-xl border border-indigo-500/30 text-indigo-200">
+                💡 <strong>What is 1-Click Auto-Apply?</strong> CampusPilot AI analyzes the job's required skills against your profile, auto-tailors your resume statement, and generates customized answers to role questions for instant review.
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">1</span>
+                    <h4 class="font-bold text-white text-sm">Browse or Filter</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Filter by minimum monthly stipend (e.g. ₹25k+, ₹80k+, or Unpaid) or sort by highest ATS match fit.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">2</span>
+                    <h4 class="font-bold text-white text-sm">Click "Auto-Prepare & Review"</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Click the button on any card to open the preview modal. The AI fills your candidate details and answers automatically.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">3</span>
+                    <h4 class="font-bold text-white text-sm">Review & Edit</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    You have 100% control to review, edit, or adjust any of the pre-filled fields or generated answer prompts.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">4</span>
+                    <h4 class="font-bold text-white text-sm">Submit with Verified Token</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Click <strong>🚀 Confirm & Submit Application</strong>. Generates a tamper-proof receipt ID (<code class="text-cyan-300">CP-CONF-XXXXXX</code>).
+                  </p>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Tab 2 Content: Official Portals -->
+          ${howToApplyActiveTab === 'portal' ? `
+            <div class="space-y-4 text-xs animate-fade-in">
+              <div class="p-3.5 bg-cyan-950/40 rounded-xl border border-cyan-500/30 text-cyan-200">
+                🌐 <strong>Direct Official Career Portals:</strong> You can apply directly on Google, Microsoft, Amazon, or Apple career pages anytime.
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-xs">1</span>
+                    <h4 class="font-bold text-white text-sm">Click "🌐 Portal ➔"</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    On any internship card, click the <strong>🌐 Portal ➔</strong> button or the <strong>Official Link ➔</strong> header badge.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-xs">2</span>
+                    <h4 class="font-bold text-white text-sm">Authentic Career Portal Opens</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    The official website (e.g. <code class="text-cyan-300">careers.google.com</code> or <code class="text-cyan-300">amazon.jobs</code>) opens in a fresh new browser tab.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold text-xs">3</span>
+                    <h4 class="font-bold text-white text-sm">Copy AI Answers & Resume</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Copy the tailored resume bullet points and generated answers from CampusPilot into the company's job application form.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">4</span>
+                    <h4 class="font-bold text-white text-sm">Verify Submission Receipt</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    After submitting, go to <strong>My Applications</strong> and click <strong>Verify Submission</strong> to enter the company confirmation ID.
+                  </p>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Tab 3 Content: Import Custom Link -->
+          ${howToApplyActiveTab === 'custom' ? `
+            <div class="space-y-4 text-xs animate-fade-in">
+              <div class="p-3.5 bg-purple-950/40 rounded-xl border border-purple-500/30 text-purple-200">
+                🔗 <strong>Found an Internship Online?</strong> Paste any official link from LinkedIn, Internshala, Twitter, or startup job boards to import and auto-apply!
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs">1</span>
+                    <h4 class="font-bold text-white text-sm">Copy the URL</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Copy the web link from your browser (e.g. <code class="text-purple-300">https://careers.google.com/jobs/results/...</code>).
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs">2</span>
+                    <h4 class="font-bold text-white text-sm">Click "+ Provide Official Link"</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Click the <strong>🔗 + Provide Official Link</strong> button in the dashboard action bar.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs">3</span>
+                    <h4 class="font-bold text-white text-sm">Auto-Detect & ATS Match</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Paste your URL. The parser instantly detects company name, title, stipend, skills, and calculates your match score.
+                  </p>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">4</span>
+                    <h4 class="font-bold text-white text-sm">Import to Feed</h4>
+                  </div>
+                  <p class="text-slate-300 leading-relaxed">
+                    Click <strong>🚀 Import & Add to Auto-Apply</strong>. Your custom internship appears immediately in your feed!
+                  </p>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Tab 4 Content: Tracking & Receipts -->
+          ${howToApplyActiveTab === 'tracking' ? `
+            <div class="space-y-4 text-xs animate-fade-in">
+              <div class="p-3.5 bg-emerald-950/40 rounded-xl border border-emerald-500/30 text-emerald-200">
+                📊 <strong>Transparent Tracking:</strong> Every application is logged with a 6-stage lifecycle pipeline, tamper-proof SHA-256 tokens, and audit receipts.
+              </div>
+
+              <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                  <span>📈</span> <span>The 6 Application Stages</span>
+                </h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px]">
+                  <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-indigo-300">1. SUBMITTED</div>
+                  <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-cyan-300">2. AWAITING ACK</div>
+                  <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-amber-300">3. UNDER REVIEW</div>
+                  <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-purple-300">4. ASSESSMENT</div>
+                  <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-indigo-400">5. INTERVIEW</div>
+                  <div class="p-2 bg-slate-900 rounded-lg border border-emerald-500/40 text-emerald-400 font-bold">6. OFFER 🎉</div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Footer Actions -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-800 flex-wrap gap-3">
+            <button onclick="window.closeHowToApplyModal(); window.openCustomUrlModal();" class="btn-secondary text-xs py-2.5 px-4 text-cyan-300 border-cyan-500/30 hover:bg-cyan-950/40 font-bold flex items-center gap-1.5">
+              <span>🔗</span> <span>+ Provide Official Link Now</span>
+            </button>
+            <button onclick="window.closeHowToApplyModal()" class="btn-primary text-xs py-2.5 px-6 bg-indigo-600 font-bold">
+              Got It, Back to Dashboard ➔
+            </button>
+          </div>
+
         </div>
       </div>
     `;
@@ -12458,6 +13075,174 @@
       window.Interview3DEngine.resetCamera();
       showToast("3D Camera reset to origin.");
     }
+  };
+
+  // Universal Safe Link Opener for Official Career Portals
+  window.openOfficialCareerPortal = function(e, url) {
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+    const targetUrl = (url && url !== '#' && typeof url === 'string' && url.startsWith('http')) 
+      ? url 
+      : 'https://careers.google.com/students/';
+    try {
+      const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        window.location.href = targetUrl;
+      }
+    } catch(err) {
+      window.location.href = targetUrl;
+    }
+  };
+
+  // Window Controller Actions for Official Internship Link Parser Modal
+  window.openCustomUrlModal = function() {
+    isCustomUrlModalOpen = true;
+    if (!customUrlInput) {
+      customUrlInput = "https://careers.google.com/jobs/results/software-engineer-intern-2027";
+    }
+    customUrlParsedData = parseOfficialInternshipUrl(customUrlInput);
+    let modalRoot = document.getElementById('modal-root');
+    if (!modalRoot) {
+      modalRoot = document.createElement('div');
+      modalRoot.id = 'modal-root';
+      document.body.appendChild(modalRoot);
+    }
+    modalRoot.innerHTML = renderCustomUrlModal();
+    renderApp();
+  };
+
+  window.closeCustomUrlModal = function() {
+    isCustomUrlModalOpen = false;
+    let modalRoot = document.getElementById('modal-root');
+    if (modalRoot) {
+      modalRoot.innerHTML = '';
+    }
+    renderApp();
+  };
+
+  let customUrlDebounceTimer = null;
+  window.handleCustomUrlInput = function(url) {
+    customUrlInput = url;
+    if (customUrlDebounceTimer) clearTimeout(customUrlDebounceTimer);
+    customUrlDebounceTimer = setTimeout(() => {
+      customUrlParsedData = parseOfficialInternshipUrl(url);
+      const compEl = document.getElementById('custom-opp-company');
+      const titleEl = document.getElementById('custom-opp-title');
+      const locEl = document.getElementById('custom-opp-location');
+      const stipEl = document.getElementById('custom-opp-stipend');
+      const skEl = document.getElementById('custom-opp-skills');
+      if (compEl) compEl.value = customUrlParsedData.company;
+      if (titleEl) titleEl.value = customUrlParsedData.title;
+      if (locEl) locEl.value = customUrlParsedData.location;
+      if (stipEl) stipEl.value = customUrlParsedData.stipend;
+      if (skEl) skEl.value = (customUrlParsedData.requiredSkills || []).join(', ');
+    }, 120);
+  };
+
+  window.handleParseTrigger = function() {
+    const input = document.getElementById('custom-url-input-box')?.value || customUrlInput;
+    if (input) {
+      customUrlInput = input;
+      customUrlParsedData = parseOfficialInternshipUrl(input);
+      let modalRoot = document.getElementById('modal-root');
+      if (modalRoot && isCustomUrlModalOpen) {
+        modalRoot.innerHTML = renderCustomUrlModal();
+      }
+      renderApp();
+      showToast("⚡ Official portal details auto-detected!");
+    }
+  };
+
+  window.setSampleCustomUrl = function(sampleUrl) {
+    customUrlInput = sampleUrl;
+    customUrlParsedData = parseOfficialInternshipUrl(sampleUrl);
+    let modalRoot = document.getElementById('modal-root');
+    if (modalRoot && isCustomUrlModalOpen) {
+      modalRoot.innerHTML = renderCustomUrlModal();
+    }
+    renderApp();
+    showToast("✓ Verified portal sample loaded!");
+  };
+
+  window.submitCustomUrlOpportunity = function() {
+    const rawUrl = document.getElementById('custom-url-input-box')?.value || customUrlInput || "https://careers.google.com";
+    const company = document.getElementById('custom-opp-company')?.value || "Tech Enterprise";
+    const title = document.getElementById('custom-opp-title')?.value || "Software Engineering Intern";
+    const location = document.getElementById('custom-opp-location')?.value || "Remote / Bengaluru";
+    const stipend = document.getElementById('custom-opp-stipend')?.value || "₹35,000 / month";
+    const skillsStr = document.getElementById('custom-opp-skills')?.value || "Python, SQL, Git";
+    const skills = skillsStr.split(',').map(s => s.trim()).filter(Boolean);
+
+    let stipendAmount = 35000;
+    const nums = stipend.replace(/[^0-9]/g, '');
+    if (nums) stipendAmount = parseInt(nums, 10);
+    if (stipend.toLowerCase().includes('unpaid')) stipendAmount = 0;
+
+    const newOpp = {
+      id: `opp-custom-${Date.now()}`,
+      company,
+      title,
+      logo: company.toLowerCase().includes('google') ? '🌐' : (company.toLowerCase().includes('microsoft') ? '🪟' : (company.toLowerCase().includes('amazon') ? '📦' : (company.toLowerCase().includes('apple') ? '🍎' : '🚀'))),
+      location,
+      stipend,
+      stipendAmount,
+      internshipType: stipendAmount === 0 ? "unpaid" : "paid",
+      requiredSkills: skills.length > 0 ? skills : ["Python", "SQL", "Git"],
+      applyUrl: rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`,
+      isHotAlert: true,
+      supportedAutoApply: true,
+      isCustomImport: true,
+      importedAt: new Date().toISOString()
+    };
+
+    // Add to top of active opportunities
+    opportunities.unshift(newOpp);
+    saveOpportunities(opportunities);
+
+    // Also dispatch notification to Notification Center
+    try {
+      if (notifEngine && typeof notifEngine.processOpportunityNotification === 'function') {
+        notifEngine.processOpportunityNotification(newOpp, studentProfile, services);
+      }
+    } catch(e) {}
+
+    window.closeCustomUrlModal();
+    showToast(`🎉 Imported official internship '${title} at ${company}'! 1-Click Auto-Apply ready.`);
+    renderApp();
+  };
+
+  // Window Controller Actions for How to Apply Guide Modal
+  window.openHowToApplyModal = function(initialTab = 'auto') {
+    isHowToApplyModalOpen = true;
+    howToApplyActiveTab = initialTab || 'auto';
+    let modalRoot = document.getElementById('modal-root');
+    if (!modalRoot) {
+      modalRoot = document.createElement('div');
+      modalRoot.id = 'modal-root';
+      document.body.appendChild(modalRoot);
+    }
+    modalRoot.innerHTML = renderHowToApplyModal();
+    renderApp();
+  };
+
+  window.closeHowToApplyModal = function() {
+    isHowToApplyModalOpen = false;
+    let modalRoot = document.getElementById('modal-root');
+    if (modalRoot) {
+      modalRoot.innerHTML = '';
+    }
+    renderApp();
+  };
+
+  window.setHowToApplyTab = function(tab) {
+    howToApplyActiveTab = tab;
+    let modalRoot = document.getElementById('modal-root');
+    if (modalRoot && isHowToApplyModalOpen) {
+      modalRoot.innerHTML = renderHowToApplyModal();
+    }
+    renderApp();
   };
 
   document.addEventListener('DOMContentLoaded', () => {

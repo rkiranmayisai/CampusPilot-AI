@@ -74,6 +74,8 @@ function prepareAutoApplyApplication(studentProfile = {}, opportunity = {}) {
     logo: opportunity.logo || "💼",
     stipend: opportunity.stipend || "Paid",
     internshipType: opportunity.internshipType || "paid",
+    applyUrl: opportunity.applyUrl || officialUrl,
+    officialUrl: opportunity.applyUrl || officialUrl,
     officialJobUrl: officialUrl,
     externalConfirmationUrl: officialUrl,
     matchScore: matchAnalysis.matchScore || 85,
